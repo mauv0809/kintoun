@@ -1,0 +1,20 @@
+# Task Board
+
+## Today
+- [ ] Decide what application to build (domain + rough scope)
+- [ ] `git init` + first commit of Claudify scaffolding
+- [ ] `cargo init` once application shape is decided
+
+## This Week
+- [ ] Add `.gitignore` (Rust + editor + OS)
+- [ ] Set up rustfmt + clippy config
+- [ ] Stand up minimal GitHub Actions CI (fmt, clippy, test)
+- [ ] Install rust-analyzer + cargo-watch locally; verify watch loop
+- [ ] First code milestone (TBD after domain decision)
+
+## Backlog
+- [ ] Evaluate cargo-nextest, cargo-audit, cargo-deny when relevant
+- [ ] Push to GitHub remote (confirm account/visibility first)
+
+## Done
+-

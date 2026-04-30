@@ -1,0 +1,3 @@
+- `2026-04-30 21:58:18` | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/learn-rust.
+- `2026-04-30 21:58:40` | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/learn-rust.
+- `2026-04-30 22:29:19` | ERROR | OTHER | Bash | Exit code 2

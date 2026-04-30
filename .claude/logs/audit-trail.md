@@ -1,0 +1,23 @@
+- `2026-04-30 21:20:32` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/MEMORY.md
+- `2026-04-30 21:20:43` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/feedback_coaching_pseudocode_first.md
+- `2026-04-30 21:20:50` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/user_role.md
+- `2026-04-30 21:20:59` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/project_learn_rust.md
+- `2026-04-30 21:21:07` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/feedback_workflow_review_loop.md
+- `2026-04-30 21:21:15` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/project_tooling_intent.md
+- `2026-04-30 21:21:38` | Write | .claude/memory.md
+- `2026-04-30 21:21:45` | Write | Task Board.md
+- `2026-04-30 21:21:55` | Write | Daily Notes/043026.md
+- `2026-04-30 21:40:00` | Write | .claude/memory.md
+- `2026-04-30 21:40:02` | Write | Task Board.md
+- `2026-04-30 21:43:18` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/reference_rust_toolchain_path.md
+- `2026-04-30 21:43:21` | Edit | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/MEMORY.md
+- `2026-04-30 21:51:47` | Write | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/feedback_explain_acronyms.md
+- `2026-04-30 21:51:50` | Edit | /home/netrom/.claude/projects/-home-netrom-learn-rust/memory/MEMORY.md
+- `2026-04-30 21:58:49` | Edit | /home/netrom/.claude/statusline-command.sh
+- `2026-04-30 21:59:00` | Edit | /home/netrom/.claude/settings.json
+- `2026-04-30 22:31:46` | Write | .gitignore
+- `2026-04-30 22:33:10` | Write | /home/netrom/.claude/projects/-home-netrom-nimbus/memory/feedback_user_runs_git.md
+- `2026-04-30 22:33:17` | Edit | /home/netrom/.claude/projects/-home-netrom-nimbus/memory/MEMORY.md
+- `2026-04-30 22:45:47` | Edit | Cargo.toml
+- `2026-04-30 22:45:56` | Write | .github/workflows/ci.yml
+- `2026-04-30 22:46:38` | Edit | Task Board.md

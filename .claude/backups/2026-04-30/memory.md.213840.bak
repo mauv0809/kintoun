@@ -1,0 +1,33 @@
+# Memory
+
+## Project
+- **Name:** learn-rust
+- **What:** Greenfield Rust project. A real application built together as the vehicle for learning Rust.
+- **Language/build tool:** Rust + Cargo (not yet initialized).
+- **State (2026-04-30):** Empty — no Cargo.toml, no src/, no git. Only Claudify scaffolding.
+- **Domain:** TBD — first design decision.
+
+## Workflow Rules (load every session)
+- **Pseudocode-first.** Default to scaffolding/pseudocode. Real code only when asked to refine/finish, or as a small example during review. See auto-memory `feedback_coaching_pseudocode_first.md`.
+- **Loop:** design together → user codes → review together. I don't race ahead.
+- **Frame Rust against other languages** the user already knows (assume experienced engineer until proven otherwise).
+
+## Key Paths
+- `/home/netrom/learn-rust` — project root
+- `Cargo.toml`, `src/main.rs` — TBD after `cargo init`
+- `.github/workflows/` — TBD when CI added
+
+## Now
+- Onboarding complete. Awaiting decision on what to build.
+
+## Open Threads
+- Decide application domain (CLI? web service? TUI? parser? game?)
+- Bootstrap: `git init` + `cargo init` + `.gitignore` + rustfmt/clippy config
+- CI/CD scaffold (GitHub Actions: fmt + clippy + test)
+
+## Recent Decisions
+- 2026-04-30: Project-driven learning, not exercise-based.
+- 2026-04-30: I provide scaffolding/pseudocode by default; user writes the code.
+
+## Blockers
+- (none)

@@ -1,0 +1,8 @@
+- [Coaching rule: pseudocode-first, real code only on request](feedback_coaching_pseudocode_first.md) — Hard rule for this project: scaffolding/pseudocode by default, full real code only when asked to refine/finish or as a review example.
+- [User profile: learning Rust from scratch](user_role.md) — Builds-real-apps learner; wants principles + syntax explained as we co-design.
+- [Project: nimbus — distributed KV/stream/queue Rust app](project_nimbus.md) — Co-designed real app named nimbus (Goku's cloud); learning Rust is the primary outcome.
+- [Workflow: project-driven, incremental, review-together](feedback_workflow_review_loop.md) — Design together → user codes → review together; I provide scaffolding + examples on request.
+- [Always explain acronyms on first use](feedback_explain_acronyms.md) — Expand and briefly explain every technical acronym (WAL, REPL, CQRS, etc.) first time in a session.
+- [Use AskUserQuestion (multi-choice) for option lists](feedback_use_multichoice_for_options.md) — Prefer the AskUserQuestion tool over raw-text bullet lists when asking user to pick between options.
+- [Tooling intent: rust-analyzer, cargo-watch, CI/CD](project_tooling_intent.md) — Plan for git init + standard Rust dev tooling and CI; specifics TBD as we go.
+- [Rust toolchain path + Bash-tool PATH workaround](reference_rust_toolchain_path.md) — Toolchain at ~/.cargo/bin; the Bash tool doesn't source .cargo/env, prepend it or use full paths.

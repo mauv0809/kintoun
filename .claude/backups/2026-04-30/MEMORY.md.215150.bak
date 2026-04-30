@@ -1,0 +1,6 @@
+- [Coaching rule: pseudocode-first, real code only on request](feedback_coaching_pseudocode_first.md) — Hard rule for this project: scaffolding/pseudocode by default, full real code only when asked to refine/finish or as a review example.
+- [User profile: learning Rust from scratch](user_role.md) — Builds-real-apps learner; wants principles + syntax explained as we co-design.
+- [Project: learn-rust greenfield Rust app](project_learn_rust.md) — Co-designed real application as the vehicle for learning Rust; greenfield, git from day one.
+- [Workflow: project-driven, incremental, review-together](feedback_workflow_review_loop.md) — Design together → user codes → review together; I provide scaffolding + examples on request.
+- [Tooling intent: rust-analyzer, cargo-watch, CI/CD](project_tooling_intent.md) — Plan for git init + standard Rust dev tooling and CI; specifics TBD as we go.
+- [Rust toolchain path + Bash-tool PATH workaround](reference_rust_toolchain_path.md) — Toolchain at ~/.cargo/bin; the Bash tool doesn't source .cargo/env, prepend it or use full paths.
