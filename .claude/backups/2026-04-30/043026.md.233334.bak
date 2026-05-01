@@ -1,0 +1,26 @@
+# 043026 - Daily Work Log
+
+## Decisions
+- Project-driven Rust learning: build a real application together.
+- Coaching rule: pseudocode/scaffolding by default; full real code only when user asks to refine/finish or as a review example.
+- Tooling: git from day one, rust-analyzer, cargo-watch, CI/CD planned.
+- **Project name:** nimbus (Goku's cloud — future cluster could be nimbus.cloud).
+- **Domain:** Distributed KV with stream/queue/cluster ambitions (Option B). Niche deferred to ~M4.
+- **M1 design (all 6 steps):** commands `get/set/del/exists/incr/decr`; `enum Command` + match dispatch; apply-mutation `Storage` trait with `Mutation` + `MutationOutcome`; Layout 2 modules (`cmd/storage/executor/repl/error.rs` + `lib.rs` + `main.rs`); per-module errors with hand-rolled `ParseError` + thiserror `StorageError` + anyhow `main.rs`; plain stdin REPL input (generic over `BufRead`/`Write`); **Heavy + TDD testing strategy with proptest, ~35–50 tests, CI from first commit.**
+- Acronym-explain rule: spell out every technical acronym on first use until told to stop.
+- Multi-choice option presentation: prefer `AskUserQuestion` over raw text bullets.
+
+## Meetings & Conversations
+- Onboarding session with Claudify — established workflow, goals, and persistent memories.
+
+## Notes
+- Greenfield: git initialized, no Cargo project yet. Directory renamed `learn-rust` → `nimbus`. Auto-memory migrated to `-home-netrom-nimbus` path.
+- M1 design completed in this session.
+- Bash tool's shell does not source `~/.cargo/env` — prepend it or use full paths when running rust commands. Saved as reference memory.
+- Saved 7 persistent memories (1 user, 4 feedback, 1 project, 1 reference) under auto-memory.
+
+## End of Day Summary
+- M1 design fully locked across 5 dimensions. Ready to bootstrap (`cargo init`) once Claude is restarted in `~/nimbus`.
+
+## End of Day Summary
+-

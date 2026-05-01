@@ -14,10 +14,11 @@ Every entry MUST cite its source using one of:
 - (none yet — rules accumulate as you work and the auditor validates learnings)
 
 ## Platform & Tool Rules
-- (none yet)
+- [043026] When running Rust/Cargo commands via the Bash tool, prepend `~/.cargo/bin` to PATH or use full paths — the Bash tool does not source `~/.cargo/env`. [Source: empirical 043026]
 
 ## Project Patterns
-- (none yet)
+- [043026] Default values belong in the parser, not the type. When a command has an optional argument with a default (e.g. `incr foo` defaults to `by: 1`), fill the default in `from_str` so the enum variant is always uniform. Downstream code never branches on "did the user supply this?" [Source: agent inference 043026]
+- [043026] Per-arm TDD discipline for `match` dispatchers: only implement an arm when a red test demands it. Leave undemanded arms as a panic stub. The compiler still enforces exhaustiveness; panics on unimplemented arms are loud and informative during development. [Source: agent inference 043026]
 
 ## Known Failure Modes
-- (none yet)
+- [043026] Rust orphan-file silent failure: a `.rs` file in `src/` not declared via `mod foo;` in `lib.rs` or `main.rs` is silently ignored. `cargo test` reports "0 tests" with no error. Always read the `Running unittests <path>` line in cargo output to confirm the correct crate root. [Source: empirical 043026]

@@ -1,10 +1,10 @@
 # Memory
 
 ## Project
-- **Name:** **kintoun** (crate). Directory: `/home/netrom/nimbus` (rename deferred). Future cloud version: `kintoun.cloud` — Dragon Ball callback (kintoun = 筋斗雲, Goku's Flying Nimbus, Japanese original; `nimbus` was taken on crates.io).
+- **Name:** **nimbus** (crate + directory). Future cloud version: `nimbus.cloud` — Dragon Ball callback to Goku's Flying Nimbus.
 - **What:** Distributed KV store with stream/queue/cluster ambitions, built as the vehicle for learning Rust.
-- **Language/build tool:** Rust + Cargo (edition 2024). Toolchain at `~/.cargo/bin` — Bash tool doesn't source `~/.cargo/env`; prepend to PATH or use full paths.
-- **State (2026-05-01):** Crate renamed `nimbus` → `kintoun`. `Cargo.toml` + `Cargo.lock` updated, `cargo check` clean. Deps + CI in place. `lib.rs` + `main.rs` split. 5 placeholder reds confirmed on `src/cmd.rs`. First commit not yet made.
+- **Language/build tool:** Rust + Cargo. Cargo project not yet initialized; will run `cargo init --name nimbus`.
+- **State (2026-04-30):** Git repo initialized. Directory renamed to `~/nimbus`. Auto-memory migrated to `-home-netrom-nimbus` path.
 - **Persona/niche:** Deferred. Decide ~M4 once friction surfaces real angles.
 
 ## Workflow Rules (load every session)
@@ -51,29 +51,29 @@
 - Old auto-memory at `~/.claude/projects/-home-netrom-learn-rust/memory/` is stale; can be deleted.
 - `Cargo.toml`, `src/{main,lib,cmd,storage,executor,repl,error}.rs` — Layout 2, after `cargo init --name nimbus`
 - `tests/kv_integration.rs` — optional integration tests
-- `.github/workflows/ci.yml` — fmt --check + clippy -D warnings + test (live as of 043026)
+- `.github/workflows/` — TBD post-bootstrap
 
 ## Now
-- Mid-first-TDD-slice on `src/cmd.rs`. Bootstrap done (Cargo project + deps + CI workflow + `lib.rs`). 5 placeholder reds in place: 4 test bodies + `from_str` body all `todo!()`. Phase-1 (real test bodies) and Phase-2 (`from_str` scaffold with worked `set` arm + skeleton `get`/`incr` arms + `todo!()` for `del`/`exists`/`decr`) posted in chat — user will execute next session.
+- M1 design **complete**. Ready to bootstrap (`cargo init`, etc.) or to begin user-driven implementation.
 
 ## Open Threads
-- **Resume the slice (next session):** retype Phase-1 test bodies into `src/cmd.rs`, confirm 5 *real* reds, then Phase-2 — replace `from_str` with the scaffold, fill in `get` + `incr` arms, confirm 5 greens. **Durable scaffolds preserved at `Daily Notes/043026.md` → "Carry-forward scaffolds"** (survives cold start). Also blocker: lines 9–10 of `src/cmd.rs` still say `value: u64`; rename to `by: u64` before tests reference `by`.
-- **First commit still pending (user runs).** Drafted message ready. Don't forget `Cargo.lock` for binary crate.
-- **After 5 greens:** review user's `from_str` together; expand parser tests (extra whitespace, casing, trailing args, multi-word values, missing-arg errors, invalid-amount errors); then add new `ParseError` variants the new tests demand.
-- Cleanup: `rm -rf ~/.claude/projects/-home-netrom-learn-rust` once we're sure the new path is fully working.
+- **Bootstrap (next):** `cargo init --name nimbus`, write `.gitignore`, first commit of Claudify scaffolding + cargo skeleton, decide rustfmt/clippy config, GitHub Actions CI stub.
+- **First implementation slice (TDD):** Start at `cmd.rs`. Write 1 failing test (e.g., `parse("") → Err(ParseError::Empty)`), then minimum code to pass, then add the next test. Review the layer with me when ~5–8 tests are green.
+- Cleanup: `rm -rf ~/.claude/projects/-home-netrom-learn-rust` once new path is verified working.
+- Recommended: restart Claude in `~/nimbus` for clean cwd before bootstrap.
 
 ## Recent Decisions
-- 2026-04-30: Bootstrap complete — `Cargo.toml` deps `thiserror = "2"`, `anyhow = "1"`, dev `proptest = "1"` + `pretty_assertions = "1"`; CI workflow at `.github/workflows/ci.yml` (fmt --check + clippy -D warnings + test, w/ `Swatinem/rust-cache@v2`).
-- 2026-04-30: `lib.rs` + `main.rs` split landed. `lib.rs` declares `pub mod cmd;`. `main.rs` stays hello-world until `repl.rs` exists, then becomes a thin shim calling `nimbus::repl::run(...)`.
-- 2026-04-30: Struct variants over tuple variants for `Command` — names enforce field semantics; protects against k/v swap bugs and pays off when fields multiply.
-- 2026-04-30: `Incr`/`Decr` use `by: u64` (rejected `i64`). Principle of least surprise — "incrementing by a negative" reads wrong; `s.parse::<u64>()` rejects negatives for free.
-- 2026-04-30: Per-arm TDD discipline — `from_str` arms only get implemented when a red test demands them. `del`/`exists`/`decr` stay `todo!()` for now (no tests yet).
 - 2026-04-30: M1 testing = Heavy + TDD discipline. Red-green-refactor; ~35–50 tests; `proptest` for properties; REPL `run()` generic over `BufRead`/`Write` for testability.
 - 2026-04-30: M1 error model = per-module errors; `ParseError` hand-rolled, `StorageError` via `thiserror`, `main.rs` uses `anyhow`.
+- 2026-04-30: M1 REPL input = plain `stdin().read_line()`, no crate.
+- 2026-04-30: Crate named **nimbus**; directory renamed to `~/nimbus`. Auto-memory migrated.
 - 2026-04-30: Module Layout 2 with `lib.rs` + `main.rs` split, one concept per file.
 - 2026-04-30: Storage Shape B — apply-mutation pattern with `Mutation` + `MutationOutcome`.
-- 2026-04-30: M1 commands = `get`/`set`/`del`/`exists`/`incr`/`decr`; dispatch via `enum Command` + `match` exhaustiveness.
-- 2026-04-30: Crate named **nimbus**; domain = distributed KV/streams/queues/cluster (Option B); persona/niche deferred to ~M4; Raft paper deferred to M7.
+- 2026-04-30: Dispatch via `enum Command` + `match` exhaustiveness.
+- 2026-04-30: M1 commands = `get`/`set`/`del`/`exists`/`incr`/`decr`.
+- 2026-04-30: Domain locked = distributed KV/streams/queues/cluster (Option B).
+- 2026-04-30: Defer persona/niche decision until ~M4.
+- 2026-04-30: Skip Raft paper until M7. Read DDIA + Rust Book organically.
 
 ## Blockers
 - (none)

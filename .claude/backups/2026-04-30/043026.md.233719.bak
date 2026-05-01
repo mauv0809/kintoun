@@ -1,0 +1,46 @@
+# 043026 - Daily Work Log
+
+## Decisions
+- Project-driven Rust learning: build a real application together.
+- Coaching rule: pseudocode/scaffolding by default; full real code only when user asks to refine/finish or as a review example.
+- Tooling: git from day one, rust-analyzer, cargo-watch, CI/CD planned.
+- **Project name:** nimbus (Goku's cloud — future cluster could be nimbus.cloud).
+- **Domain:** Distributed KV with stream/queue/cluster ambitions (Option B). Niche deferred to ~M4.
+- **M1 design (all 6 steps):** commands `get/set/del/exists/incr/decr`; `enum Command` + match dispatch; apply-mutation `Storage` trait with `Mutation` + `MutationOutcome`; Layout 2 modules (`cmd/storage/executor/repl/error.rs` + `lib.rs` + `main.rs`); per-module errors with hand-rolled `ParseError` + thiserror `StorageError` + anyhow `main.rs`; plain stdin REPL input (generic over `BufRead`/`Write`); **Heavy + TDD testing strategy with proptest, ~35–50 tests, CI from first commit.**
+- Acronym-explain rule: spell out every technical acronym on first use until told to stop.
+- Multi-choice option presentation: prefer `AskUserQuestion` over raw text bullets.
+
+## Meetings & Conversations
+- Onboarding session with Claudify — established workflow, goals, and persistent memories.
+
+## Notes
+- Greenfield: git initialized, no Cargo project yet. Directory renamed `learn-rust` → `nimbus`. Auto-memory migrated to `-home-netrom-nimbus` path.
+- M1 design completed in this session.
+- Bash tool's shell does not source `~/.cargo/env` — prepend it or use full paths when running rust commands. Saved as reference memory.
+- Saved 7 persistent memories (1 user, 4 feedback, 1 project, 1 reference) under auto-memory.
+
+## End of Day Summary
+
+### Accomplishments
+- **Bootstrap complete:** Cargo project (`nimbus`, edition 2024); deps `thiserror = "2"` + `anyhow = "1"` + dev `proptest = "1"` + `pretty_assertions = "1"`; `cargo build` + `cargo test` green (0 tests).
+- **CI workflow up:** `.github/workflows/ci.yml` runs `cargo fmt --check`, `cargo clippy -D warnings`, `cargo test`. Uses `dtolnay/rust-toolchain@stable` + `Swatinem/rust-cache@v2`.
+- **Library/binary split landed:** `src/lib.rs` (with `pub mod cmd;`) + `src/main.rs` (still hello-world, will become a thin shim once REPL lands).
+- **`src/cmd.rs` scaffolded:** `Command` enum with struct variants for all 6 verbs; `ParseError` enum with `Empty` + `UnknownCommand(String)`; `impl FromStr` stub; `#[cfg(test)] mod tests` with 1 worked test + 4 skeleton tests = **5 placeholder reds**.
+- **Phase-1 + Phase-2 scaffolds posted in chat** for next session: real test bodies (with `matches!` + match-guard patterns) + `from_str` scaffold (worked `set` arm, skeleton `get` + `incr` arms, `todo!()` for `del`/`exists`/`decr`).
+
+### Decisions made today
+- **`Incr`/`Decr` use `by: u64`** (rejected `i64`). Reason: principle of least surprise — "incrementing by negative" reads wrong; `s.parse::<u64>()` rejects negatives for free. Field named `by` (not `value`) to avoid clash with `Set { value: String }`.
+- **Struct variants over tuple variants for `Command`** — named fields enforce semantics, prevent k/v swap bugs, scale to more fields cleanly.
+- **Per-arm TDD discipline** — `from_str` arms only get implemented when a red test demands them. `del`/`exists`/`decr` stay `todo!()`.
+- **`main.rs` stays hello-world** until `repl.rs` lands. The lib/bin split is purely for testability right now.
+- **Caught a silent footgun** mid-session: cargo-watch reported "0 tests" but ran the binary (`Running unittests src/main.rs`) — `src/cmd.rs` was an orphan because no `mod cmd;` declaration existed yet. Always look at the *unittests path* line.
+
+### Open items carried forward
+- 4 test bodies still `todo!("write me")`; `from_str` still `todo!("write me!")` — Phase-1 + Phase-2 are next session's first move.
+- First commit pending — user runs.
+- Old auto-memory at `~/.claude/projects/-home-netrom-learn-rust` not yet deleted.
+
+### Tomorrow's priorities
+1. Phase-1: fill in 4 test bodies → confirm 5 *real* reds.
+2. Phase-2: replace `from_str` with the scaffold; implement `get` + `incr` arms.
+3. Confirm 5 greens; review `from_str` together; design next test batch.

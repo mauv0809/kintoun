@@ -1,0 +1,11 @@
+# Knowledge Nominations
+
+Candidate learnings from agents and sessions. The auditor reviews these
+during each audit cycle and promotes valid ones to knowledge-base.md.
+
+## Pending Nominations
+
+- [043026] /wrap-up: **Rust orphan-file silent footgun.** A `.rs` file in `src/` not declared via `mod foo;` (in `lib.rs` or `main.rs`) is silently ignored — `cargo test` will report "0 passed" rather than fail. Always read the *Running unittests <path>* line in cargo output to confirm the right crate root was used. | Evidence: empirical 043026 — user added `src/cmd.rs` with 4 test functions; `cargo test` reported 0 tests run because `lib.rs` didn't exist yet. Resolved by creating `src/lib.rs` with `pub mod cmd;`.
+- [043026] /wrap-up: **Default values live in the parser, not the type.** Rust enums can't express "field with default value" the way Python kwargs can. When commands have optional arguments (e.g. `incr foo` defaults to `by: 1`), the parser fills the default and the type stays uniform. Downstream code never branches on "did the user supply this?" | Evidence: agent inference 043026 — chosen during `Incr`/`Decr` modeling discussion; alternative shapes (`Option<T>` field, two variants per op) were considered and rejected on this principle.
+- [043026] /wrap-up: **Per-arm TDD discipline for `match` dispatchers.** When implementing a `match` over many variants/arms, only implement arms covered by a red test. Leave others as `todo!("no test yet")`. The compiler still forces exhaustiveness; the unimplemented arms panic loudly if the parser ever hits them in development; tests drive the actual coverage. | Evidence: agent inference 043026 — applied to `Command::from_str` scaffold; `del`/`exists`/`decr` arms left as `todo!()` until tests demand them.
+- [043026] /wrap-up: **Use the type system to validate input where possible.** `s.parse::<u64>()` rejects negatives for free. Choosing `u64` over `i64` for `Incr.by` shifted the "no negative amounts" rule from a runtime check into a parse-time error message — fewer code paths, clearer errors, no manual `if x < 0` branch needed. | Evidence: agent inference 043026 — applied during `Incr`/`Decr` field-type decision; user confirmed the semantic preference ("incr by negative is weird").

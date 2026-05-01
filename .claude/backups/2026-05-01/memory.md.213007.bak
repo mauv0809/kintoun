@@ -1,10 +1,10 @@
 # Memory
 
 ## Project
-- **Name:** **kintoun** (crate). Directory: `/home/netrom/nimbus` (rename deferred). Future cloud version: `kintoun.cloud` — Dragon Ball callback (kintoun = 筋斗雲, Goku's Flying Nimbus, Japanese original; `nimbus` was taken on crates.io).
+- **Name:** **nimbus** (crate + directory). Future cloud version: `nimbus.cloud` — Dragon Ball callback to Goku's Flying Nimbus.
 - **What:** Distributed KV store with stream/queue/cluster ambitions, built as the vehicle for learning Rust.
 - **Language/build tool:** Rust + Cargo (edition 2024). Toolchain at `~/.cargo/bin` — Bash tool doesn't source `~/.cargo/env`; prepend to PATH or use full paths.
-- **State (2026-05-01):** Crate renamed `nimbus` → `kintoun`. `Cargo.toml` + `Cargo.lock` updated, `cargo check` clean. Deps + CI in place. `lib.rs` + `main.rs` split. 5 placeholder reds confirmed on `src/cmd.rs`. First commit not yet made.
+- **State (2026-04-30):** Cargo project bootstrapped (`nimbus`, edition 2024). Deps + CI in place. `lib.rs` + `main.rs` split. First TDD slice in progress on `src/cmd.rs`. First commit not yet made.
 - **Persona/niche:** Deferred. Decide ~M4 once friction surfaces real angles.
 
 ## Workflow Rules (load every session)

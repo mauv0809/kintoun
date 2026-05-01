@@ -13,7 +13,6 @@ categories = ["database-implementations", "data-structures"]
 exclude = [
     ".claude/",
     ".github/",
-    ".mcp.json",
     "Daily Notes/",
     "Scratchpad.md",
     "Task Board.md",

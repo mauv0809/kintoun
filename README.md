@@ -1,1 +1,33 @@
-# nimbus
+# kintoun
+
+> 筋斗雲 — Goku's Flying Nimbus, the cloud he rides.
+
+Distributed key-value store in Rust. **Early development — not yet usable.**
+
+Built as a Rust learning project. Roadmap toward streams, queues, replication, and partitioning.
+
+## Status
+
+`v0.1.0` — name reservation. The crate compiles but every command is currently a `todo!()` placeholder. Do not depend on this yet.
+
+## Roadmap
+
+- **M1** — In-memory KV + REPL (active)
+- **M2** — TCP server + framed protocol (tokio)
+- **M3** — Write-Ahead Log persistence + replay
+- **M4** — Pub/sub event streaming on the log
+- **M5** — Consumer groups + queue semantics
+- **M6** — Single-leader async replication
+- **M7** — Raft-lite leader election
+- **M8** — Partitioning/sharding
+
+## License
+
+Dual-licensed under either of:
+
+- [MIT License](LICENSE-MIT)
+- [Apache License, Version 2.0](LICENSE-APACHE)
+
+at your option.
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in this work, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.

@@ -1,10 +1,10 @@
 # Memory
 
 ## Project
-- **Name:** **kintoun** (crate). Directory: `/home/netrom/nimbus` (rename deferred). Future cloud version: `kintoun.cloud` — Dragon Ball callback (kintoun = 筋斗雲, Goku's Flying Nimbus, Japanese original; `nimbus` was taken on crates.io).
+- **Name:** **nimbus** (crate + directory). Future cloud version: `nimbus.cloud` — Dragon Ball callback to Goku's Flying Nimbus.
 - **What:** Distributed KV store with stream/queue/cluster ambitions, built as the vehicle for learning Rust.
-- **Language/build tool:** Rust + Cargo (edition 2024). Toolchain at `~/.cargo/bin` — Bash tool doesn't source `~/.cargo/env`; prepend to PATH or use full paths.
-- **State (2026-05-01):** Crate renamed `nimbus` → `kintoun`. `Cargo.toml` + `Cargo.lock` updated, `cargo check` clean. Deps + CI in place. `lib.rs` + `main.rs` split. 5 placeholder reds confirmed on `src/cmd.rs`. First commit not yet made.
+- **Language/build tool:** Rust + Cargo. Cargo project not yet initialized; will run `cargo init --name nimbus`.
+- **State (2026-04-30):** Git repo initialized. Directory renamed to `~/nimbus`. Auto-memory migrated to `-home-netrom-nimbus` path.
 - **Persona/niche:** Deferred. Decide ~M4 once friction surfaces real angles.
 
 ## Workflow Rules (load every session)
@@ -51,13 +51,13 @@
 - Old auto-memory at `~/.claude/projects/-home-netrom-learn-rust/memory/` is stale; can be deleted.
 - `Cargo.toml`, `src/{main,lib,cmd,storage,executor,repl,error}.rs` — Layout 2, after `cargo init --name nimbus`
 - `tests/kv_integration.rs` — optional integration tests
-- `.github/workflows/ci.yml` — fmt --check + clippy -D warnings + test (live as of 043026)
+- `.github/workflows/` — TBD post-bootstrap
 
 ## Now
 - Mid-first-TDD-slice on `src/cmd.rs`. Bootstrap done (Cargo project + deps + CI workflow + `lib.rs`). 5 placeholder reds in place: 4 test bodies + `from_str` body all `todo!()`. Phase-1 (real test bodies) and Phase-2 (`from_str` scaffold with worked `set` arm + skeleton `get`/`incr` arms + `todo!()` for `del`/`exists`/`decr`) posted in chat — user will execute next session.
 
 ## Open Threads
-- **Resume the slice (next session):** retype Phase-1 test bodies into `src/cmd.rs`, confirm 5 *real* reds, then Phase-2 — replace `from_str` with the scaffold, fill in `get` + `incr` arms, confirm 5 greens. **Durable scaffolds preserved at `Daily Notes/043026.md` → "Carry-forward scaffolds"** (survives cold start). Also blocker: lines 9–10 of `src/cmd.rs` still say `value: u64`; rename to `by: u64` before tests reference `by`.
+- **Resume the slice (next session):** retype Phase-1 test bodies into `src/cmd.rs`, confirm 5 *real* reds, then Phase-2 — replace `from_str` with the scaffold, fill in `get` + `incr` arms, confirm 5 greens. Phase-1 + Phase-2 transcripts are in this conversation.
 - **First commit still pending (user runs).** Drafted message ready. Don't forget `Cargo.lock` for binary crate.
 - **After 5 greens:** review user's `from_str` together; expand parser tests (extra whitespace, casing, trailing args, multi-word values, missing-arg errors, invalid-amount errors); then add new `ParseError` variants the new tests demand.
 - Cleanup: `rm -rf ~/.claude/projects/-home-netrom-learn-rust` once we're sure the new path is fully working.
