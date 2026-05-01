@@ -36,7 +36,7 @@
   - `main.rs` returns `Result<(), anyhow::Error>` for ergonomic top-level. `Cargo.toml` adds: `thiserror`, `anyhow`.
 - **Module layout (Layout 2):** `src/{main,lib,cmd,storage,executor,repl,error}.rs` + optional `tests/kv_integration.rs`. `lib.rs` + `main.rs` split.
 - **REPL input:** plain `std::io::stdin().read_line()` in a loop. No deps. Trivial swap to `rustyline` post-M1 if desired. **REPL `run()` generic over `BufRead` + `Write`** for testability.
-- **Crate name:** `kintoun` (renamed from `nimbus` on 2026-05-01 — `nimbus` was taken on crates.io).
+- **Crate name:** `nimbus`.
 - **Testing strategy: Heavy + TDD discipline.** Red-green-refactor. ~35–50 tests across parser/storage/executor/repl + property tests. Storage trait tests double as the contract suite for M3+ impls. Dev-deps: `proptest`, optionally `pretty_assertions`. CI runs `cargo test` from first commit with tests.
 - **Test-writing split:** Per layer — user writes first 2–3 tests by hand to learn Rust testing idioms; Claude expands the suite; user implements to green; we review user's implementation together. See auto-memory `feedback_test_writing_split.md`.
 
@@ -49,27 +49,22 @@
 - `/home/netrom/nimbus` — project root
 - Auto-memory: `~/.claude/projects/-home-netrom-nimbus/memory/`
 - Old auto-memory at `~/.claude/projects/-home-netrom-learn-rust/memory/` is stale; can be deleted.
-- `Cargo.toml`, `src/{main,lib,cmd,storage,executor,repl,error}.rs` — Layout 2, crate name `kintoun`
+- `Cargo.toml`, `src/{main,lib,cmd,storage,executor,repl,error}.rs` — Layout 2, after `cargo init --name nimbus`
 - `tests/kv_integration.rs` — optional integration tests
 - `.github/workflows/ci.yml` — fmt --check + clippy -D warnings + test (live as of 043026)
 
 ## Now
-- Publish prep done. Crate renamed `nimbus` → `kintoun`; manifest filled with full publish metadata; dual-license files in place; README replaced. `cargo publish --dry-run` passes. Awaiting user: commit → `cargo login` → `cargo publish` to lock the name on crates.io. After publish, resume TDD slice on `src/cmd.rs` — cadence is **one test at a time, full red→green per cycle**. Cycle 1 = implement `set` arm in `from_str` (test body already real). Phase-2 scaffold is preserved at `Daily Notes/043026.md` → "Carry-forward scaffolds".
+- Mid-first-TDD-slice on `src/cmd.rs`. Bootstrap done (Cargo project + deps + CI workflow + `lib.rs`). 5 placeholder reds in place: 4 test bodies + `from_str` body all `todo!()`. Phase-1 (real test bodies) and Phase-2 (`from_str` scaffold with worked `set` arm + skeleton `get`/`incr` arms + `todo!()` for `del`/`exists`/`decr`) posted in chat — user will execute next session.
 
 ## Open Threads
-- **Publish flow (user runs):** (1) commit the rename + metadata + memory updates; (2) `cargo login <token>` once (token from https://crates.io/me after GitHub sign-in); (3) `cargo publish` from project root. Version 0.1.0 is permanent (yank-only, no delete) — manifest has been reviewed.
-- **TDD cadence (LOCKED 050126):** one test at a time, full red→green cycle (vs. batched Phase-1/Phase-2). Per cycle: user writes test body → confirm red → user implements just that `from_str` arm → confirm green → next.
-- **Cycle order after publish:** 1) `set` (test already real, just implement arm); 2) `get`; 3) `empty_string`; 4) `unknown_verb`; 5) `incr_default`. User writes test body for cycles 2–5 (test-writing-split rule).
-- **After 5 greens:** review user's `from_str` together; expand parser tests (extra whitespace, casing, trailing args, multi-word values, missing-arg errors, invalid-amount errors); add new `ParseError` variants the new tests demand.
+- **Resume the slice (next session):** retype Phase-1 test bodies into `src/cmd.rs`, confirm 5 *real* reds, then Phase-2 — replace `from_str` with the scaffold, fill in `get` + `incr` arms, confirm 5 greens. **Durable scaffolds preserved at `Daily Notes/043026.md` → "Carry-forward scaffolds"** (survives cold start). Also blocker: lines 9–10 of `src/cmd.rs` still say `value: u64`; rename to `by: u64` before tests reference `by`.
+- **First commit still pending (user runs).** Drafted message ready. Don't forget `Cargo.lock` for binary crate.
+- **After 5 greens:** review user's `from_str` together; expand parser tests (extra whitespace, casing, trailing args, multi-word values, missing-arg errors, invalid-amount errors); then add new `ParseError` variants the new tests demand.
 - Cleanup: `rm -rf ~/.claude/projects/-home-netrom-learn-rust` once we're sure the new path is fully working.
 
 ## Recent Decisions
-- 2026-05-01: Renamed crate `nimbus` → `kintoun` (Goku's Flying Nimbus, Japanese original). Reason: `nimbus` taken on crates.io. Directory + GitHub repo already match (`mauv0809/kintoun`).
-- 2026-05-01: Dual-licensed MIT OR Apache-2.0 (Rust ecosystem norm). `LICENSE-MIT` + `LICENSE-APACHE` files; `license = "MIT OR Apache-2.0"` in manifest.
-- 2026-05-01: Decided to publish v0.1.0 to crates.io as a name-reservation. Description honest about pre-alpha state. README documents roadmap.
-- 2026-05-01: TDD cadence = one test at a time, full red→green cycle (preferred over batched Phase-1/Phase-2). User writes each test body; Claude reviews + provides arm scaffolds.
 - 2026-04-30: Bootstrap complete — `Cargo.toml` deps `thiserror = "2"`, `anyhow = "1"`, dev `proptest = "1"` + `pretty_assertions = "1"`; CI workflow at `.github/workflows/ci.yml` (fmt --check + clippy -D warnings + test, w/ `Swatinem/rust-cache@v2`).
-- 2026-04-30: `lib.rs` + `main.rs` split landed. `lib.rs` declares `pub mod cmd;`. `main.rs` stays hello-world until `repl.rs` exists, then becomes a thin shim calling `kintoun::repl::run(...)`.
+- 2026-04-30: `lib.rs` + `main.rs` split landed. `lib.rs` declares `pub mod cmd;`. `main.rs` stays hello-world until `repl.rs` exists, then becomes a thin shim calling `nimbus::repl::run(...)`.
 - 2026-04-30: Struct variants over tuple variants for `Command` — names enforce field semantics; protects against k/v swap bugs and pays off when fields multiply.
 - 2026-04-30: `Incr`/`Decr` use `by: u64` (rejected `i64`). Principle of least surprise — "incrementing by a negative" reads wrong; `s.parse::<u64>()` rejects negatives for free.
 - 2026-04-30: Per-arm TDD discipline — `from_str` arms only get implemented when a red test demands them. `del`/`exists`/`decr` stay `todo!()` for now (no tests yet).

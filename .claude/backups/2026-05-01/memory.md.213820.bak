@@ -64,12 +64,8 @@
 - Cleanup: `rm -rf ~/.claude/projects/-home-netrom-learn-rust` once we're sure the new path is fully working.
 
 ## Recent Decisions
-- 2026-05-01: Renamed crate `nimbus` → `kintoun` (Goku's Flying Nimbus, Japanese original). Reason: `nimbus` taken on crates.io. Directory + GitHub repo already match (`mauv0809/kintoun`).
-- 2026-05-01: Dual-licensed MIT OR Apache-2.0 (Rust ecosystem norm). `LICENSE-MIT` + `LICENSE-APACHE` files; `license = "MIT OR Apache-2.0"` in manifest.
-- 2026-05-01: Decided to publish v0.1.0 to crates.io as a name-reservation. Description honest about pre-alpha state. README documents roadmap.
-- 2026-05-01: TDD cadence = one test at a time, full red→green cycle (preferred over batched Phase-1/Phase-2). User writes each test body; Claude reviews + provides arm scaffolds.
 - 2026-04-30: Bootstrap complete — `Cargo.toml` deps `thiserror = "2"`, `anyhow = "1"`, dev `proptest = "1"` + `pretty_assertions = "1"`; CI workflow at `.github/workflows/ci.yml` (fmt --check + clippy -D warnings + test, w/ `Swatinem/rust-cache@v2`).
-- 2026-04-30: `lib.rs` + `main.rs` split landed. `lib.rs` declares `pub mod cmd;`. `main.rs` stays hello-world until `repl.rs` exists, then becomes a thin shim calling `kintoun::repl::run(...)`.
+- 2026-04-30: `lib.rs` + `main.rs` split landed. `lib.rs` declares `pub mod cmd;`. `main.rs` stays hello-world until `repl.rs` exists, then becomes a thin shim calling `nimbus::repl::run(...)`.
 - 2026-04-30: Struct variants over tuple variants for `Command` — names enforce field semantics; protects against k/v swap bugs and pays off when fields multiply.
 - 2026-04-30: `Incr`/`Decr` use `by: u64` (rejected `i64`). Principle of least surprise — "incrementing by a negative" reads wrong; `s.parse::<u64>()` rejects negatives for free.
 - 2026-04-30: Per-arm TDD discipline — `from_str` arms only get implemented when a red test demands them. `del`/`exists`/`decr` stay `todo!()` for now (no tests yet).
