@@ -80,3 +80,12 @@
 - `2026-05-02 21:10:58` | Edit | /home/netrom/.claude/projects/-home-netrom-kintoun/memory/MEMORY.md
 - `2026-05-02 21:20:06` | Edit | docs/adr/0005-storage-shape-apply-mutation.md
 - `2026-05-02 21:20:07` | Edit | README.md
+- `2026-05-02 21:25:30` | Edit | .claude/settings.json
+- `2026-05-02 21:31:33` | Edit | .claude/settings.json
+- `2026-05-02 21:33:15` | Edit | .claude/settings.json
+- `2026-05-02 21:38:06` | Write | /home/netrom/.claude/projects/-home-netrom-kintoun/memory/feedback_avoid_known_doomed_decisions.md
+- `2026-05-02 21:38:10` | Edit | /home/netrom/.claude/projects/-home-netrom-kintoun/memory/MEMORY.md
+- `2026-05-02 22:14:31` | Write | .claude/memory.md
+- `2026-05-02 22:18:10` | Write | Task Board.md
+- `2026-05-02 22:18:11` | Write | Daily Notes/050226.md
+- `2026-05-02 22:18:13` | Edit | .claude/knowledge-nominations.md
