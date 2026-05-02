@@ -1,0 +1,11 @@
+- [Coaching rule: pseudocode-first, real code only on request](feedback_coaching_pseudocode_first.md) — Hard rule for this project: scaffolding/pseudocode by default, full real code only when asked to refine/finish or as a review example.
+- [Rust beginner — provide substantial scaffolding](feedback_rust_beginner_scaffolding.md) — User is brand-new to Rust syntax. For each new layer/concept, post a rich starter kit in chat (imports, structure, one worked example, skeletons with TODOs, inline syntax explanations).
+- [User profile: learning Rust from scratch](user_role.md) — Builds-real-apps learner; wants principles + syntax explained as we co-design.
+- [Project: nimbus — distributed KV/stream/queue Rust app](project_nimbus.md) — Co-designed real app named nimbus (Goku's cloud); learning Rust is the primary outcome.
+- [Workflow: project-driven, incremental, review-together](feedback_workflow_review_loop.md) — Design together → user codes → review together; I provide scaffolding + examples on request.
+- [Test-writing split: hand-roll-once per layer](feedback_test_writing_split.md) — User writes first 2-3 tests per new layer; Claude expands the suite; user implements to green; we review together.
+- [Always explain acronyms on first use](feedback_explain_acronyms.md) — Expand and briefly explain every technical acronym (WAL, REPL, CQRS, etc.) first time in a session.
+- [Use AskUserQuestion (multi-choice) for option lists](feedback_use_multichoice_for_options.md) — Prefer the AskUserQuestion tool over raw-text bullet lists when asking user to pick between options.
+- [Tooling intent: rust-analyzer, cargo-watch, CI/CD](project_tooling_intent.md) — Plan for git init + standard Rust dev tooling and CI; specifics TBD as we go.
+- [Rust toolchain path + Bash-tool PATH workaround](reference_rust_toolchain_path.md) — Toolchain at ~/.cargo/bin; the Bash tool doesn't source .cargo/env, prepend it or use full paths.
+- [User runs commit/push/branch-switching; Claude can stage and inspect](feedback_user_runs_git.md) — User reserves commit/push/branch-movement; Claude may run `git add` and read-only commands; Claude drafts commit messages.

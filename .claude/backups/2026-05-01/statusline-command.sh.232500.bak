@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Claude Code status line — based on Kali twoline PS1
+input=$(cat)
+
+cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd')
+model=$(echo "$input" | jq -r '.model.display_name // ""')
+used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
+
+user=$(whoami)
+host=$(hostname -s)
+
+# Colors (ANSI)
+green='\033[0;32m'
+bold_blue='\033[1;34m'
+bold_white='\033[0;1m'
+reset='\033[0m'
+
+# Build context info suffix
+suffix=""
+if [ -n "$used" ]; then
+  suffix=" ctx:$(printf '%.0f' "$used")%"
+fi
+if [ -n "$model" ]; then
+  suffix="$suffix $model"
+fi
+
+printf "${green}┌──(${bold_blue}${user}㉿${host}${green})-[${bold_white}${cwd}${green}]${suffix}${reset}\n"

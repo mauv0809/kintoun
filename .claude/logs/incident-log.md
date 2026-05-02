@@ -3,3 +3,6 @@
 - `2026-04-30 22:29:19` | FAILURE | ERROR | OTHER | Bash | Exit code 2
 - `2026-04-30 23:35:12` | COMPLETENESS | MEDIUM | BLOCKED: Contains TBD/TODO/FIXME/PLACEHOLDER markers. Content must be investigation-complete. → .claude/knowledge-base.md
 - `2026-05-01 21:35:12` | GUARD | LOW | WARNING: mv command allowed → mv /home/netrom/nimbus/LICENSE /home/netrom/nimbus/LICENSE-MIT && ls /home/netrom/nimbus/LICENSE* 2>&1
+- `2026-05-01 23:24:29` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-01 23:24:30` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-02 19:08:52` | GUARD | LOW | WARNING: mv command allowed → mv ~/.claude/projects/-home-netrom-kintoun/memory/project_nimbus.md ~/.claude/projects/-home-netrom-kintoun/memory/project_kintoun.md

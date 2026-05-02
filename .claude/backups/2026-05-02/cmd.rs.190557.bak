@@ -10,31 +10,13 @@ pub enum Command {
     Decr { key: String, by: u64 },
 }
 
-#[derive(Debug, PartialEq, thiserror::Error)]
+#[derive(Debug, PartialEq)]
 pub enum ParseError {
-    #[error("empty input")]
     Empty,
-    #[error("missing argument: {0}")]
     MissingArg(&'static str),
-    #[error("unknown command: {0}")]
     UnknownCommand(String),
-    #[error("invalid amount {input:?}: {reason}")]
     InvalidAmount { input: String, reason: String },
-    #[error("too many arguments: {0}")]
-    TooManyArgs(&'static str),
 }
-
-// Helper functions
-fn expect_done<'a>(
-    parts: &mut impl Iterator<Item = &'a str>,
-    command: &'static str,
-) -> Result<(), ParseError> {
-    match parts.next() {
-        None => Ok(()),
-        Some(_) => Err(ParseError::TooManyArgs(command)),
-    }
-}
-
 fn take_arg<'a>(
     parts: &mut impl Iterator<Item = &'a str>,
     label: &'static str,
@@ -61,38 +43,32 @@ impl FromStr for Command {
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         let mut parts = input.split_whitespace();
         let verb = parts.next().ok_or(ParseError::Empty)?;
-        match verb.to_ascii_lowercase().as_str() {
+        match verb {
             "set" => {
                 let key: String = take_arg(&mut parts, "key")?;
                 let value = take_arg(&mut parts, "value")?;
-                expect_done(&mut parts, "set")?;
                 Ok(Command::Set { key, value })
             }
             "get" => {
                 let key: String = take_arg(&mut parts, "key")?;
-                expect_done(&mut parts, "get")?;
                 Ok(Command::Get { key })
             }
             "del" => {
                 let key: String = take_arg(&mut parts, "key")?;
-                expect_done(&mut parts, "del")?;
                 Ok(Command::Del { key })
             }
             "exists" => {
                 let key: String = take_arg(&mut parts, "key")?;
-                expect_done(&mut parts, "exists")?;
                 Ok(Command::Exists { key })
             }
             "incr" => {
                 let key: String = take_arg(&mut parts, "key")?;
                 let by: u64 = take_amount(&mut parts)?;
-                expect_done(&mut parts, "incr")?;
                 Ok(Command::Incr { key, by })
             }
             "decr" => {
                 let key: String = take_arg(&mut parts, "key")?;
                 let by: u64 = take_amount(&mut parts)?;
-                expect_done(&mut parts, "decr")?;
                 Ok(Command::Decr { key, by })
             }
             _ => Err(ParseError::UnknownCommand(verb.to_string())),
@@ -239,7 +215,7 @@ mod tests {
         );
     }
     #[test]
-    fn parse_decr_with_amount_returns_decr_command() {
+    fn parse_decr_with_amount_returns_incr_command() {
         let input = "decr counter 10";
         let cmd: Command = input.parse().unwrap();
         assert_eq!(
@@ -262,157 +238,6 @@ mod tests {
                     "unexpected reason: {reason:?}"
                 );
             }
-            other => panic!("got {other:?}"),
-        }
-    }
-    #[test]
-    fn parse_uppercase_verb_to_lowercase() {
-        let input = "DECR counter 10";
-        let cmd: Command = input.parse().unwrap();
-        assert_eq!(
-            cmd,
-            Command::Decr {
-                key: String::from("counter"),
-                by: 10
-            }
-        );
-    }
-    #[test]
-    fn parse_mixed_case_verb_to_lowercase() {
-        let input = "DeCr counter 10";
-        let cmd: Command = input.parse().unwrap();
-        assert_eq!(
-            cmd,
-            Command::Decr {
-                key: String::from("counter"),
-                by: 10
-            }
-        );
-    }
-    #[test]
-    fn leading_whitespace_is_ignored() {
-        let input = " incr counter 10";
-        let cmd: Command = input.parse().unwrap();
-        assert_eq!(
-            cmd,
-            Command::Incr {
-                key: String::from("counter"),
-                by: 10
-            }
-        );
-    }
-    #[test]
-    fn trailing_whitespace_is_ignored() {
-        let input = "incr counter 10 ";
-        let cmd: Command = input.parse().unwrap();
-        assert_eq!(
-            cmd,
-            Command::Incr {
-                key: String::from("counter"),
-                by: 10
-            }
-        );
-    }
-    #[test]
-    fn multiple_whitespace_is_ignored() {
-        let input = "  incr  counter  10  ";
-        let cmd: Command = input.parse().unwrap();
-        assert_eq!(
-            cmd,
-            Command::Incr {
-                key: String::from("counter"),
-                by: 10
-            }
-        );
-    }
-    #[test]
-    fn tabs_are_ignored() {
-        let input = "incr\tcounter\t10";
-        let cmd: Command = input.parse().unwrap();
-        assert_eq!(
-            cmd,
-            Command::Incr {
-                key: String::from("counter"),
-                by: 10
-            }
-        );
-    }
-    #[test]
-    fn newline_is_ignored() {
-        let input = "incr\ncounter\n10\n";
-        let cmd: Command = input.parse().unwrap();
-        assert_eq!(
-            cmd,
-            Command::Incr {
-                key: String::from("counter"),
-                by: 10
-            }
-        );
-    }
-    #[test]
-    fn all_whitespace_input_returns_empty_error() {
-        let input = "   ";
-        let result: Result<Command, ParseError> = input.parse();
-        match result {
-            Err(ParseError::Empty) => {}
-            other => panic!("got {other:?}"),
-        }
-    }
-    #[test]
-    fn parse_get_with_extra_arg_returns_too_many_args_error() {
-        let input = "get foo bar";
-        let result: Result<Command, ParseError> = input.parse();
-        match result {
-            Err(ParseError::TooManyArgs(command)) => assert_eq!(command, "get"),
-            other => panic!("got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn parse_set_with_extra_arg_returns_too_many_args_error() {
-        let input = "set foo bar baz";
-        let result: Result<Command, ParseError> = input.parse();
-        match result {
-            Err(ParseError::TooManyArgs(command)) => assert_eq!(command, "set"),
-            other => panic!("got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn parse_del_with_extra_arg_returns_too_many_args_error() {
-        let input = "del foo bar";
-        let result: Result<Command, ParseError> = input.parse();
-        match result {
-            Err(ParseError::TooManyArgs(command)) => assert_eq!(command, "del"),
-            other => panic!("got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn parse_exists_with_extra_arg_returns_too_many_args_error() {
-        let input = "exists foo bar";
-        let result: Result<Command, ParseError> = input.parse();
-        match result {
-            Err(ParseError::TooManyArgs(command)) => assert_eq!(command, "exists"),
-            other => panic!("got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn parse_incr_with_extra_arg_returns_too_many_args_error() {
-        let input = "incr counter 5 extra";
-        let result: Result<Command, ParseError> = input.parse();
-        match result {
-            Err(ParseError::TooManyArgs(command)) => assert_eq!(command, "incr"),
-            other => panic!("got {other:?}"),
-        }
-    }
-    #[test]
-    fn parse_decr_with_extra_arg_returns_too_many_args_error() {
-        let input = "decr counter 5 extra";
-        let result: Result<Command, ParseError> = input.parse();
-        match result {
-            Err(ParseError::TooManyArgs(command)) => assert_eq!(command, "decr"),
             other => panic!("got {other:?}"),
         }
     }

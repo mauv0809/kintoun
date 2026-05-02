@@ -1,0 +1,19 @@
+---
+name: Project — nimbus (Rust distributed KV/stream/queue as learning vehicle)
+description: Greenfield Rust project named nimbus. Distributed KV with stream/queue/cluster ambitions. Application is the vehicle; learning Rust is the primary outcome.
+type: project
+---
+
+- **Repo path:** `/home/netrom/nimbus` (renamed from `learn-rust` 2026-04-30)
+- **Crate name:** `nimbus`. Future cloud version: `nimbus.cloud` — Dragon Ball callback to Goku's Flying Nimbus.
+- **State as of 2026-04-30:** Git initialized; no Cargo project yet; only Claudify scaffolding + design decisions in `.claude/memory.md`.
+- **Domain:** Distributed key-value store with planned features for event streaming, message queues, replication, consensus (Raft-lite), and partitioning. Modeled loosely after Redis + Kafka, but built ground-up for learning.
+- **Persona/niche:** Deferred. Decide ~M4 once friction surfaces real angles.
+- **Goal:** Build a real Rust application together; learning Rust is the *primary* outcome, the app is the *vehicle*.
+
+**Why:** Project-driven learning, ambitious scope with milestone-based delivery so user feels "done" frequently. User explicitly does not want to fret over niche before building.
+
+**How to apply:**
+- When recommending features/scope, optimize for *what teaches the most Rust per unit of effort* (ownership, lifetimes, traits, error handling, async, generics, concurrency) — not for shipping a polished product.
+- Hold the line on milestone scope. Only forward-looking constraint: "don't make M1 decisions that block M4–M8."
+- Architectural decisions made for M1 to date are recorded in `.claude/memory.md` "M1 Design" section.

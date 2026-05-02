@@ -8,7 +8,7 @@ Built as a Rust learning project. Roadmap toward streams, queues, replication, a
 
 ## Status
 
-`v0.0.1` — name reservation. The crate compiles but every command is currently a `todo!()` placeholder. Do not depend on this yet.
+`v0.1.0` — name reservation. The crate compiles but every command is currently a `todo!()` placeholder. Do not depend on this yet.
 
 ## Roadmap
 

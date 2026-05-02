@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Claude Code status line — based on Kali twoline PS1
+input=$(cat)
+
+cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd')
+model=$(echo "$input" | jq -r '.model.display_name // ""')
+remaining=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty')
+five_h=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+seven_d=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+
+user=$(whoami)
+host=$(hostname -s)
+
+# Colors (ANSI)
+green='\033[0;32m'
+bold_blue='\033[1;34m'
+bold_white='\033[0;1m'
+reset='\033[0m'
+
+# Build info suffix
+suffix=""
+if [ -n "$model" ]; then
+  suffix=" ${model}"
+fi
+if [ -n "$remaining" ]; then
+  suffix="${suffix} ctx:$(printf '%.0f' "$remaining")%left"
+fi
+if [ -n "$five_h" ]; then
+  suffix="${suffix} 5h:$(printf '%.0f' "$five_h")%"
+fi
+if [ -n "$seven_d" ]; then
+  suffix="${suffix} 7d:$(printf '%.0f' "$seven_d")%"
+fi
+
+printf '%b%s\n' "${green}┌──(${bold_blue}${user}㉿${host}${green})-[${bold_white}${cwd}${green}]" "${suffix}${reset}"
