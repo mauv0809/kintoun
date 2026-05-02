@@ -1,0 +1,7 @@
+# Rust / Cargo
+/target
+
+# Claudify local-only files
+CLAUDE.local.md
+.claude/settings.local.json
+.gitnexus

@@ -21,17 +21,6 @@ Built as a Rust learning project. Roadmap toward streams, queues, replication, a
 - **M7** — Raft-lite leader election
 - **M8** — Partitioning/sharding
 
-## Architecture
-
-The storage layer splits operations into mutations and reads:
-
-- **Mutations** (`set`, `del`, `incr`, `decr`) go through `Storage::apply(Mutation) -> MutationOutcome`. The `Mutation` enum is the canonical event type — every change to state passes through this funnel.
-- **Reads** (`get`, `exists`) bypass the mutation funnel via dedicated methods.
-
-This split is structural, not incidental. From M3 onward, the mutation log is the substrate that durability (WAL), streaming (pub/sub), replication, and consensus all operate over. Reads don't need to be logged, replayed, or replicated — encoding the asymmetry in the type system avoids forcing every later layer to filter reads out.
-
-See [ADR 0005](docs/adr/0005-storage-shape-apply-mutation.md) for the full rationale and alternatives.
-
 ## License
 
 Dual-licensed under either of:

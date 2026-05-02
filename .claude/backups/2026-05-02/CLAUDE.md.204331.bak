@@ -1,0 +1,142 @@
+# Claude Context — Claudify
+
+This project uses Claudify, a professional operating system for Claude Code.
+Always read `.claude/memory.md` before taking action.
+
+## Quick Start
+- Run `/start` to begin work
+- Run `/sync` mid-day to refresh memory
+- Run `/wrap-up` at end of day
+- Run `/audit` to verify recent work quality
+- Run `/safe-clear` to safely flush context and resume fresh
+- Run `/unstick` when stuck on a problem
+- Run `/retro` for sprint retrospective
+- Run `/system-audit` for deep infrastructure audit
+
+## Key Files
+- Memory: `.claude/memory.md` (read this for current context)
+- Knowledge Base: `.claude/knowledge-base.md` (system-wide learned rules — read before every task)
+- Task Board: `Task Board.md`
+- Scratchpad: `Scratchpad.md` (quick capture, processed during /sync, cleared at /wrap-up)
+- Daily Notes: `Daily Notes/` (created automatically by /start)
+- Knowledge Nominations: `.claude/knowledge-nominations.md` (candidate learnings — auditor reviews)
+- Command Index: `.claude/command-index.md` (all commands with triggers and tools)
+
+## System Architecture
+- **Agents** (`.claude/agents/`): Specialist subagents with persistent memory
+  - `auditor` — Quality gate. Reviews work, promotes knowledge, proposes SOP revisions
+  - `unsticker` — Unblocks you when stuck. Root-cause analysis, fresh approaches
+  - `error-whisperer` — Translates cryptic errors into fixes. Pattern matching across sessions
+  - `rubber-duck` — Forces you to articulate the real problem. Socratic debugging
+  - `pr-ghostwriter` — Writes PR descriptions, commit messages, changelogs from diffs
+  - `yak-shave-detector` — Catches scope creep. "You started doing X but now you're doing Y"
+  - `debt-collector` — Tracks tech debt. Catalogues shortcuts, suggests when to pay them down
+  - `onboarding-sherpa` — Learns a new codebase fast. Architecture maps, key-file identification
+  - `archaeologist` — Excavates why code exists. Git blame + context reconstruction
+- **Commands** (`.claude/commands/`): Workflow rituals and utilities
+- **Hooks** (`.claude/hooks/`): Deterministic safety enforcement (logging, verification)
+- **Logs** (`.claude/logs/`): Audit trail + incident log — auto-populated by hooks
+- **Skills** (`.claude/skills/`): Domain knowledge, loaded on demand
+
+## Memory Architecture (6 Tiers)
+1. **memory.md** — Active session context (what you're doing now)
+2. **Agent Memory** (`.claude/agent-memory/`) — Per-agent persistent knowledge across sessions
+3. **Knowledge Base** (`.claude/knowledge-base.md`) — System-wide learned rules (auditor-gated)
+4. **Knowledge Nominations** (`.claude/knowledge-nominations.md`) — Candidate learnings pipeline
+5. **MCP Knowledge Graph** — Structured entities and relations (if memory MCP enabled)
+6. **Daily Notes** — Chronological session history and handoff records
+
+## Command Awareness
+
+All agents can invoke system commands. Read `.claude/command-index.md` for the full catalog.
+
+- **Self-execute**: If you have the tools a command requires, read `.claude/commands/{name}.md` and follow the procedure directly.
+- **Recommend**: If you lack the tools, output `RECOMMEND: /command [args] — [reason]` for the orchestrator.
+- Agents should proactively invoke commands when trigger conditions match.
+
+## Retrieval Map — Where to look for what
+
+| You need... | Check first | Then |
+|---|---|---|
+| What am I doing right now? | `memory.md` → Now | Task Board → Today |
+| How to do a procedure | `.claude/commands/` or `.claude/skills/` | CLAUDE.md |
+| A fact or learned rule | `knowledge-base.md` | Agent memory |
+| What happened on a specific day | `Daily Notes/MMDDYY.md` | Audit trail |
+| What went wrong before | `knowledge-base.md` → Hard Rules | Agent memory → Known Patterns |
+| What commands exist | `.claude/command-index.md` | `.claude/commands/{name}.md` |
+
+## Context Health
+
+Sessions have finite context. Heavy operations consume it fast.
+
+**Automatic safety net (hooks):**
+- `PreCompact` hook saves state before auto-compaction
+- `SessionStart(compact)` hook restores context after compaction
+- `SessionStart(user)` hook resets stale gate files on every fresh session
+
+**Completeness gates (PreToolUse Write|Edit — hard blocks):**
+- **knowledge-base.md**: Every entry needs `[Source:]` provenance, max 200 lines, no TBD/TODO
+- **memory.md**: Max 100 lines (Write only)
+- **settings.json**: Must be valid JSON (broken JSON breaks all hooks)
+- **Agent defs** (`.claude/agents/*.md`): No TBD/TODO — instructions must be definitive
+- **Ungated** (iterative by nature): Daily Notes, Scratchpad, Templates, Logs, Commands, Skills
+
+**Self-monitoring (soft signals — Claude's responsibility):**
+- After ~30+ tool calls or 3+ large file reads: run `/safe-clear` proactively
+- If you see a "compacting conversation" warning: run `/safe-clear` immediately
+- If output quality degrades (repetition, missed details): run `/safe-clear`
+- When a discrete multi-step task completes: consider `/safe-clear` before starting the next unrelated task
+- When switching between different task domains: acknowledge the boundary, prefer `/safe-clear` for heavy switches
+
+**How /safe-clear works:** Distills session state into memory.md + daily note handoff, preserving retrieval paths. Then automatically resumes work by reloading compressed context and executing the next action. Seamless to the user.
+
+## Maintenance
+- Keep memory.md compact (<100 lines)
+- Aggressively prune stale items
+- Done list cleared on Fridays
+- Review incident log during /sync and /wrap-up
+- Auditor proposes SOP revisions — user approves before changes apply
+
+<!-- gitnexus:start -->
+# GitNexus — Code Intelligence
+
+This project is indexed by GitNexus as **kintoun** (120 symbols, 118 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+
+> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+
+## Always Do
+
+- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
+- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
+- **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
+- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
+- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+
+## Never Do
+
+- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
+- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
+- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
+- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
+
+## Resources
+
+| Resource | Use for |
+|----------|---------|
+| `gitnexus://repo/kintoun/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/kintoun/clusters` | All functional areas |
+| `gitnexus://repo/kintoun/processes` | All execution flows |
+| `gitnexus://repo/kintoun/process/{name}` | Step-by-step execution trace |
+
+## CLI
+
+| Task | Read this skill file |
+|------|---------------------|
+| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
+| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
+| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
+| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
+| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
+
+<!-- gitnexus:end -->

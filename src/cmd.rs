@@ -188,6 +188,15 @@ mod tests {
         }
     }
     #[test]
+    fn parse_unknown_verb_returns_unknown_command_error_keeping_case() {
+        let input = "Foosball bar";
+        let result: Result<Command, ParseError> = input.parse();
+        match result {
+            Err(ParseError::UnknownCommand(s)) => assert_eq!(s, "Foosball"),
+            other => panic!("got {other:?}"),
+        }
+    }
+    #[test]
     fn parse_incr_without_amount_defaults_by_to_one() {
         let input = "incr counter";
         let cmd: Command = input.parse().unwrap();
