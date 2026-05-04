@@ -113,3 +113,23 @@
 - `2026-05-04 13:35:05` | Write | bacon.toml
 - `2026-05-04 13:35:06` | Write | .githooks/pre-commit
 - `2026-05-04 13:37:14` | Write | docs/dev-setup.md
+- `2026-05-04 13:51:41` | Write | .claude/memory.md
+- `2026-05-04 13:52:21` | Write | Task Board.md
+- `2026-05-04 13:54:50` | Edit | .claude/knowledge-nominations.md
+- `2026-05-04 13:55:47` | Edit | .claude/knowledge-base.md
+- `2026-05-04 13:56:29` | Edit | .claude/knowledge-nominations.md
+- `2026-05-04 13:57:27` | Edit | .claude/knowledge-nominations.md
+- `2026-05-04 14:04:08` | Edit | .claude/knowledge-nominations.md
+- `2026-05-04 14:04:19` | Edit | .claude/agent-memory/auditor/MEMORY.md
+- `2026-05-04 14:04:19` | Write | Daily Notes/050426.md
+- `2026-05-04 16:29:12` | Edit | Task Board.md
+- `2026-05-04 16:29:21` | Edit | Task Board.md
+- `2026-05-04 16:29:33` | Edit | .claude/memory.md
+- `2026-05-04 16:36:37` | Edit | .claude/memory.md
+- `2026-05-04 17:07:15` | Edit | .claude/memory.md
+- `2026-05-04 17:08:18` | Edit | .claude/memory.md
+- `2026-05-04 17:08:28` | Edit | .claude/memory.md
+- `2026-05-04 17:08:36` | Edit | Task Board.md
+- `2026-05-04 17:08:43` | Edit | Task Board.md
+- `2026-05-04 17:41:39` | Write | docs/adr/0012-m2-wire-protocol.md
+- `2026-05-04 17:42:41` | Write | docs/adr/0013-m2-server-architecture.md

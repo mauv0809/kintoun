@@ -29,3 +29,8 @@ Every entry MUST cite its source using one of:
 
 ## Known Failure Modes
 - [043026] Rust orphan-file silent failure: a `.rs` file in `src/` not declared via `mod foo;` in `lib.rs` or `main.rs` is silently ignored. `cargo test` reports "0 tests" with no error. Always read the `Running unittests <path>` line in cargo output to confirm the correct crate root. [Source: empirical 043026]
+- [050426] `cargo clippy` does not subsume `cargo fmt` — a file can pass clippy and fail `fmt --check` simultaneously. Clippy is a lint check; rustfmt is a layout check. bacon's default jobs do not run fmt. Three-layer prevention: (1) IDE format-on-save, (2) bacon `fmt` job, (3) `.githooks/pre-commit`. CI remains the final catch. [Source: empirical 050426]
+- [050426] Line coverage % is dragged down by defensive `panic!` arms in test bodies. These arms only execute when a test fails, so coverage tools count them as 0% covered. Production code coverage is what matters; report the number with that caveat. Do not refactor tests to chase the metric. [Source: empirical 050426]
+
+## Testing Patterns
+- [050426] Generic-trait contract test pattern: `pub(crate) mod contract` with test functions generic over the trait (`pub fn foo<S: Trait>(s: &mut S)`), plus a per-impl `macro_rules! delegate!` that generates thin `#[test]` wrappers. New implementations inherit all contract tests by adding one wrapper module — no test rewrites needed. Idiomatic in Rust where each test must be a concrete `#[test] fn`. [Source: agent inference 050426]

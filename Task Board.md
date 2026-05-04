@@ -1,15 +1,13 @@
 # Task Board
 
 ## Today
-(end of session — pick up tomorrow)
+(M1 done — pick up tomorrow with optional M2 design or rest)
 
 ## This Week
-- [ ] `storage.rs` stopping point D — generic `Storage` contract test suite (ADR 0006)
-- [ ] `repl.rs` — interactive loop, generic over `BufRead + Write`
-- [ ] Wire `main.rs` as thin shim calling `kintoun::repl::run(...)`
-- [ ] **M1 close tooling pass** — set up `cargo-llvm-cov` in CI + thin ADR (mirror 0009 shape); try `proptest` on `StoredValue::from_text` to feel out property-based testing
-- [ ] Cleanup: `rm -rf ~/.claude/projects/-home-netrom-{nimbus,learn-rust}` (verified migrated)
-- [ ] Cleanup: `rm -rf .claude/skills/gitnexus` and `rm -rf ~/.claude/hooks/gitnexus` (dormant after hook removal)
+- [ ] **ADR 0012** — M2 wire protocol (TCP, length-prefix envelope, text payload). Thicker Alternatives section.
+- [ ] **ADR 0013** — M2 server architecture (sync REPL + async server, Arc<Mutex>, module layout, lifecycle, testing).
+- [ ] **M2 implementation** — `src/server/{mod,codec,connection}.rs` + main.rs CLI flag + `tests/tcp_integration.rs`. Scaffold pseudocode-first when user is ready.
+- [ ] Read Tokio tutorial as reading companion before/during M2 implementation.
 
 ## Backlog (Milestone Arc)
 - [ ] M2: TCP server + framed protocol (tokio)
@@ -20,14 +18,26 @@
 - [ ] M7: Raft-lite leader election (read Raft paper at this milestone)
 - [ ] M8: Partitioning/sharding
 - [ ] Stretches: snapshots, transactions, gRPC, metrics, client SDK
+- [ ] Coverage threshold ratchet at M3 (per ADR 0011)
+- [ ] Post-M1 quoting + Str escape rules + inference policy
 
 ## Done
+- [x] **2026-05-04:** **M2 design pass complete** — six decisions locked (transport, wire format, architecture, module layout, testing, error boundary). Captured in `memory.md` M2 Design section. ADRs pending.
+- [x] **2026-05-04:** Cleanup — removed `~/.claude/projects/-home-netrom-{nimbus,learn-rust}` (migration verified); confirmed `.claude/skills/gitnexus` and `~/.claude/hooks/gitnexus` already absent.
+- [x] **2026-05-04:** **M1 STRUCTURALLY COMPLETE** — kintoun runs interactively (`cargo run`). 86 tests; clippy + fmt clean; CI green.
+- [x] **2026-05-04:** `repl.rs` — generic over BufRead+Write+Storage, anyhow error unification at boundary, Redis-like format, 11 tests (loop semantics + format precision)
+- [x] **2026-05-04:** `main.rs` wired as 5-line shim (locks stdin/stdout, builds InMemoryStorage, calls `repl::run`)
+- [x] **2026-05-04:** ADR 0010 — REPL output format + thiserror-vs-anyhow boundary convention
+- [x] **2026-05-04:** Generic Storage contract test suite (ADR 0006 point D) — 22 contract fns + `macro_rules! delegate!` wrappers; M3+ backends inherit by adding one wrapper module
+- [x] **2026-05-04:** First proptest properties on `StoredValue::from_text` — round-trip + fall-through across the full input space (~256 cases each per CI run)
+- [x] **2026-05-04:** ADR 0011 + `cargo-llvm-cov` in CI (replaces `cargo test` step; no threshold yet — measure first, ratchet at M3)
+- [x] **2026-05-04:** Local fmt parity infrastructure — `bacon.toml` fmt job, `.githooks/pre-commit`, `docs/dev-setup.md` (multi-IDE format-on-save). Caught after CI fmt failure on the M1-polish commit.
 - [x] **2026-05-04:** `storage.rs` stopping points B + C — full mutations/reads with all 5 behavior decisions locked via TDD; `StoredValue` enum with `Str`/`Int` variants
 - [x] **2026-05-04:** `StoredValue::from_text` — text→type inference at executor boundary; 8 inference tests covering numeric/non-numeric/negative/decimal/zero/u64::MAX/overflow/empty boundaries
 - [x] **2026-05-04:** 2 `del-missing` idempotency tests in storage
 - [x] **2026-05-04:** ADR 0005 status-update + ADR 0008 (tagged `StoredValue` + executor-level inference + A/B/C/D alternatives section)
-- [x] **2026-05-04:** ADR 0009 + `deny.toml` + cargo-deny CI step (license + advisory policy; permissive-only allowlist; `unused-allowed-license = "allow"`)
-- [x] **2026-05-04:** `executor.rs` — all 6 arms wired (`Command` → `Mutation`/read/exists), structured `ExecuteResult` (Mutation/Read/Existence), `ExecuteError` with `#[from] StorageError`; 14 tests covering round-trips, inference paths, error propagation (NotAnInteger, Underflow, Overflow), and the keystone test proving the layered design end-to-end
+- [x] **2026-05-04:** ADR 0009 + `deny.toml` + cargo-deny CI step (permissive license allowlist; `unused-allowed-license = "allow"`)
+- [x] **2026-05-04:** `executor.rs` — all 6 arms wired with `apply_and_wrap` helper, structured `ExecuteResult` (Mutation/Read/Existence), `ExecuteError` with `#[from] StorageError`; 15 tests covering round-trips, inference paths, error propagation (NotAnInteger, Underflow, Overflow), keystone test proving the layered design
 - [x] **2026-05-02:** Parser case-insensitivity (`to_ascii_lowercase()` + 2 tests for uppercase/mixed-case verbs)
 - [x] **2026-05-02:** Whitespace edge-case tests (6 tests: leading, trailing, multiple, tabs, newline, all-whitespace)
 - [x] **2026-05-02:** Trailing-args rejection — `ParseError::TooManyArgs(&'static str)` + `expect_done` helper + 6 tests
@@ -38,7 +48,7 @@
 - [x] **2026-05-02:** ADR 0005 expanded with reconstructed Shape A alternatives section
 - [x] **2026-05-02:** README — added Architecture section summarizing mutation/read split, pointing at ADR 0005 (later: also 0008)
 - [x] **2026-05-02:** Created `rustfmt.toml` (`edition = "2024"`, `max_width = 100`) and `clippy.toml` (`msrv = "1.85"`)
-- [x] **2026-05-02:** Auto-memory migration `~/.claude/projects/-home-netrom-nimbus` → `-home-netrom-kintoun`; project file renamed `project_nimbus.md` → `project_kintoun.md`
+- [x] **2026-05-02:** Auto-memory migration `~/.claude/projects/-home-netrom-nimbus` → `-home-netrom-kintoun`
 - [x] **2026-05-02:** GitNexus removed — CLAUDE.md block, `.gitnexus/` index, `.gitignore` line, user-global PreToolUse + PostToolUse hooks
 - [x] **2026-05-02:** Stop hook stabilized — model alias troubleshooting; finally disabled prompt step (kept logger script)
-- [x] **2026-05-02:** `storage.rs` **stopping point A** — `Mutation`, `MutationOutcome`, `StorageError`, `Storage` trait, `InMemoryStorage` skeleton; `pub mod storage;` in `lib.rs`; cargo check + clippy clean (with `#[expect(dead_code)]` on `data`)
+- [x] **2026-05-02:** `storage.rs` **stopping point A** — design surface

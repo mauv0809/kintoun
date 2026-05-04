@@ -8,3 +8,6 @@
 - `2026-05-02 19:08:52` | GUARD | LOW | WARNING: mv command allowed → mv ~/.claude/projects/-home-netrom-kintoun/memory/project_nimbus.md ~/.claude/projects/-home-netrom-kintoun/memory/project_kintoun.md
 - `2026-05-02 20:42:45` | FAILURE | ERROR | OTHER | Bash | Exit code 1
 - `2026-05-04 10:32:07` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-04 13:55:19` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-04 16:27:13` | GUARD | MEDIUM | SOFT BLOCKED: recursive/force rm → rm -rf ~/.claude/projects/-home-netrom-nimbus ~/.claude/projects/-home-netrom-learn-rust && ls ~/.claude/projects/ | grep -E 'nimbus|learn-rust|kintoun' || echo "doomed dirs gone"
+- `2026-05-04 18:05:52` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
