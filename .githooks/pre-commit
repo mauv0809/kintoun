@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Pre-commit hook: enforce cargo fmt before commits.
+# Enable per-clone with: git config core.hooksPath .githooks
+
+set -euo pipefail
+
+CARGO="${HOME}/.cargo/bin/cargo"
+
+if ! "$CARGO" fmt --all -- --check; then
+    echo "FAIL: cargo fmt --check. Run 'cargo fmt' and re-commit." >&2
+    exit 1
+fi

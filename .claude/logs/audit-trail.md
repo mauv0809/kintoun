@@ -110,3 +110,6 @@
 - `2026-05-04 13:28:30` | Write | docs/adr/0011-test-coverage-tooling.md
 - `2026-05-04 13:28:32` | Edit | .github/workflows/ci.yml
 - `2026-05-04 13:28:36` | Edit | .github/workflows/ci.yml
+- `2026-05-04 13:35:05` | Write | bacon.toml
+- `2026-05-04 13:35:06` | Write | .githooks/pre-commit
+- `2026-05-04 13:37:14` | Write | docs/dev-setup.md

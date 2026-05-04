@@ -1,0 +1,4 @@
+[jobs.fmt]
+command = ["cargo", "fmt", "--all", "--", "--check"]
+allow_warnings = true
+need_stdout = true

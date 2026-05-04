@@ -202,10 +202,7 @@ mod tests {
             },
         );
 
-        assert_eq!(
-            result,
-            Ok(ExecuteResult::Read(Some(StoredValue::Int(42)))),
-        );
+        assert_eq!(result, Ok(ExecuteResult::Read(Some(StoredValue::Int(42)))),);
     }
 
     #[test]
@@ -384,10 +381,7 @@ mod tests {
             },
         );
 
-        assert_eq!(
-            result,
-            Err(ExecuteError::Storage(StorageError::Underflow)),
-        );
+        assert_eq!(result, Err(ExecuteError::Storage(StorageError::Underflow)),);
     }
 
     #[test]
@@ -414,9 +408,6 @@ mod tests {
             },
         );
 
-        assert_eq!(
-            result,
-            Err(ExecuteError::Storage(StorageError::Overflow)),
-        );
+        assert_eq!(result, Err(ExecuteError::Storage(StorageError::Overflow)),);
     }
 }
