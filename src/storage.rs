@@ -41,6 +41,17 @@ pub enum StoredValue {
     Str(String),
     Int(u64),
 }
+impl StoredValue {
+    /// Infer a `StoredValue` from a textual argument.
+    /// Numeric tokens that fit in `u64` become `Int`; everything else becomes `Str`.
+    /// Used by the executor to type REPL input on entry.
+    pub fn from_text(s: &str) -> Self {
+        match s.parse::<u64>() {
+            Ok(n) => StoredValue::Int(n),
+            Err(_) => StoredValue::Str(s.to_string()),
+        }
+    }
+}
 impl From<&str> for StoredValue {
     fn from(s: &str) -> Self {
         StoredValue::Str(s.to_string())
@@ -394,5 +405,92 @@ mod tests {
             by: 1,
         });
         assert_eq!(result, Err(StorageError::NotAnInteger));
+    }
+    #[test]
+    fn apply_del_on_missing_key_is_idempotent() {
+        let mut storage = InMemoryStorage::new();
+
+        let result = storage.apply(Mutation::Del {
+            key: String::from("never_set"),
+        });
+
+        assert_eq!(result, Ok(MutationOutcome::Deleted));
+        assert!(!storage.exists("never_set"));
+    }
+
+    #[test]
+    fn apply_del_twice_is_idempotent() {
+        let mut storage = InMemoryStorage::new();
+        storage
+            .apply(Mutation::Set {
+                key: String::from("foo"),
+                value: "bar".into(),
+            })
+            .unwrap();
+        storage
+            .apply(Mutation::Del {
+                key: String::from("foo"),
+            })
+            .unwrap();
+
+        let second = storage.apply(Mutation::Del {
+            key: String::from("foo"),
+        });
+
+        assert_eq!(second, Ok(MutationOutcome::Deleted));
+        assert!(!storage.exists("foo"));
+    }
+    #[test]
+    fn from_text_infers_int_for_numeric_token() {
+        let result = StoredValue::from_text("5");
+        assert_eq!(result, StoredValue::Int(5));
+    }
+
+    #[test]
+    fn from_text_infers_str_for_non_numeric_token() {
+        let result = StoredValue::from_text("foo");
+        assert_eq!(result, StoredValue::Str(String::from("foo")));
+    }
+
+    #[test]
+    fn from_text_infers_str_for_negative_token() {
+        let result = StoredValue::from_text("-5");
+        assert_eq!(result, StoredValue::Str(String::from("-5")));
+    }
+    #[test]
+    fn from_text_infers_str_for_decimal_token() {
+        let result = StoredValue::from_text("3.14");
+        assert_eq!(result, StoredValue::Str(String::from("3.14")));
+    }
+
+    #[test]
+    fn from_text_infers_str_for_overflow_token() {
+        let result = StoredValue::from_text("18446744073709551616");
+        assert_eq!(
+            result,
+            StoredValue::Str(String::from("18446744073709551616"))
+        );
+    }
+    #[test]
+    fn from_text_infers_int_for_zero() {
+        // Boundary: parse::<u64>() accepts "0" → Int(0).
+        assert_eq!(StoredValue::from_text("0"), StoredValue::Int(0));
+    }
+
+    #[test]
+    fn from_text_infers_int_for_u64_max() {
+        // Symmetric to the overflow test: u64::MAX exactly should succeed as Int.
+        assert_eq!(
+            StoredValue::from_text("18446744073709551615"),
+            StoredValue::Int(u64::MAX),
+        );
+    }
+
+    #[test]
+    fn from_text_infers_str_for_empty_string() {
+        // "".parse::<u64>() errors → falls to Str("").
+        // The executor path won't normally see this (split_whitespace strips it),
+        // but locking the semantic protects against future input sources.
+        assert_eq!(StoredValue::from_text(""), StoredValue::Str(String::new()),);
     }
 }

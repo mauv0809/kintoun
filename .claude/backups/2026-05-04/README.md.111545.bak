@@ -30,7 +30,7 @@ The storage layer splits operations into mutations and reads:
 
 This split is structural, not incidental. From M3 onward, the mutation log is the substrate that durability (WAL), streaming (pub/sub), replication, and consensus all operate over. Reads don't need to be logged, replayed, or replicated — encoding the asymmetry in the type system avoids forcing every later layer to filter reads out.
 
-See [ADR 0005](docs/adr/0005-storage-shape-apply-mutation.md) for the full rationale and alternatives, and [ADR 0008](docs/adr/0008-stored-value-and-executor-coercion.md) for the tagged `StoredValue` and the executor-level inference rule.
+See [ADR 0005](docs/adr/0005-storage-shape-apply-mutation.md) for the full rationale and alternatives.
 
 ## License
 

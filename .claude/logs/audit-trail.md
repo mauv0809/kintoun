@@ -89,3 +89,11 @@
 - `2026-05-02 22:18:10` | Write | Task Board.md
 - `2026-05-02 22:18:11` | Write | Daily Notes/050226.md
 - `2026-05-02 22:18:13` | Edit | .claude/knowledge-nominations.md
+- `2026-05-04 10:30:40` | Write | Daily Notes/050426.md
+- `2026-05-04 11:14:58` | Edit | docs/adr/0005-storage-shape-apply-mutation.md
+- `2026-05-04 11:15:10` | Edit | docs/adr/0005-storage-shape-apply-mutation.md
+- `2026-05-04 11:15:23` | Write | docs/adr/0008-stored-value-and-executor-coercion.md
+- `2026-05-04 11:15:47` | Edit | README.md
+- `2026-05-04 11:20:28` | Write | deny.toml
+- `2026-05-04 11:20:41` | Write | docs/adr/0009-dependency-licensing-and-security-policy.md
+- `2026-05-04 11:20:43` | Edit | .github/workflows/ci.yml

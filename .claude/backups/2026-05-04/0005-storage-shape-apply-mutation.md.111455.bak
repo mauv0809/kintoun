@@ -1,7 +1,7 @@
 # ADR 0005: Storage Shape — Apply-Mutation Pattern
 
 Date: 2026-04-30
-Status: Accepted (implemented; supplemented by ADR 0008)
+Status: Accepted (design — implementation pending in M1)
 
 ## Context
 
@@ -68,15 +68,3 @@ M1 implementation: `InMemoryStorage` over `HashMap<String, String>`.
 - The cost is a non-trivial `Storage` interface: `apply` returns a `MutationOutcome` enum rather than `()`. Callers must handle the outcome variants. Necessary for `incr`/`decr` (which return the new numeric value) and `del` (which may indicate whether the key existed).
 - `MutationOutcome`'s exact shape is deferred to implementation. The design only locks that mutations and reads are split, and that mutations go through one funnel.
 - This ADR will need a status update (and possibly a new ADR) when `storage.rs` lands and the `MutationOutcome` shape is concrete.
-
-## Status Update — 2026-05-04
-
-The read/mutation split this ADR locks remains in force. Implementation between 2026-05-02 and 2026-05-04 evolved the specific signatures shown in the Decision section:
-
-- `read` now returns `Option<StoredValue>` (owned tagged value), not `Option<&str>`.
-- `Mutation::Set` carries `value: StoredValue`, not `value: String`.
-- `MutationOutcome` is now concrete: `Stored | Deleted | Counter { new_value: u64 }`.
-- `StorageError` variants locked: `NotAnInteger`, `Overflow`, `Underflow`.
-- Five behavior decisions originally left open are now locked by tests in `src/storage.rs`: `Incr` on missing key starts at 0; `Incr`/`Decr` on non-integer values return `NotAnInteger` and preserve the original; `Decr` underflow returns `Underflow` and preserves the original; `Del` is idempotent — missing keys return `Ok(Deleted)`; `exists` checks key presence only, not value shape.
-
-These are documented in **ADR 0008 — Tagged StoredValue and Executor-Level Inference**, which answers "what does `Mutation` carry?" without changing the read/write split this ADR establishes.
