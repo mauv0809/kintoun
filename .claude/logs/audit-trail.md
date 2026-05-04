@@ -133,3 +133,4 @@
 - `2026-05-04 17:08:43` | Edit | Task Board.md
 - `2026-05-04 17:41:39` | Write | docs/adr/0012-m2-wire-protocol.md
 - `2026-05-04 17:42:41` | Write | docs/adr/0013-m2-server-architecture.md
+- `2026-05-04 19:29:30` | Edit | .gitignore

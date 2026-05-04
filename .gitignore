@@ -4,3 +4,4 @@
 # Claudify local-only files
 CLAUDE.local.md
 .claude/settings.local.json
+.claude/backups/
