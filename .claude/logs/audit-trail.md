@@ -103,3 +103,4 @@
 - `2026-05-04 12:40:35` | Edit | src/executor.rs
 - `2026-05-04 12:44:19` | Write | Task Board.md
 - `2026-05-04 13:12:11` | Edit | src/repl.rs
+- `2026-05-04 13:16:22` | Write | docs/adr/0010-repl-output-format-and-error-handling.md
