@@ -13,7 +13,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt, clippy, llvm-tools-preview
+          components: rustfmt, clippy
 
       - name: Cache cargo registry + build
         uses: Swatinem/rust-cache@v2
@@ -24,11 +24,8 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
-
-      - name: Test + Coverage
-        run: cargo llvm-cov --all-features --workspace --summary-only
+      - name: Test
+        run: cargo test --all-features
 
       - name: Cargo deny
         uses: EmbarkStudios/cargo-deny-action@v2

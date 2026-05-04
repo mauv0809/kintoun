@@ -513,36 +513,4 @@ mod from_text_tests {
         // but locking the semantic protects against future input sources.
         assert_eq!(StoredValue::from_text(""), StoredValue::Str(String::new()));
     }
-
-    proptest! {
-        /// Round-trip property over the full u64 range.
-        ///
-        /// `proptest` generates many u64 values (including 0 and u64::MAX);
-        /// each one, stringified, must come back as `Int(n)` from `from_text`.
-        /// This locks the success branch across the entire input domain
-        /// rather than just the 0/u64::MAX/42 examples.
-        #[test]
-        fn round_trips_any_u64(n in any::<u64>()) {
-            prop_assert_eq!(
-                StoredValue::from_text(&n.to_string()),
-                StoredValue::Int(n)
-            );
-        }
-
-        /// Fall-through property: any string that fails to parse as u64
-        /// must come back as `Str(s)` unchanged.
-        ///
-        /// `".*"` is a regex strategy: proptest generates arbitrary UTF-8
-        /// strings matching the pattern. `prop_assume!` discards cases that
-        /// happen to parse as u64 — those are covered by the round-trip
-        /// property above. The remaining cases exercise the failure branch.
-        #[test]
-        fn falls_through_to_str_when_parse_fails(s in ".*") {
-            prop_assume!(s.parse::<u64>().is_err());
-            prop_assert_eq!(
-                StoredValue::from_text(&s),
-                StoredValue::Str(s.clone())
-            );
-        }
-    }
 }

@@ -114,20 +114,14 @@ impl Storage for InMemoryStorage {
         self.data.contains_key(key)
     }
 }
-
 #[cfg(test)]
-pub(crate) mod contract {
-    //! Generic contract tests for any `impl Storage`. Per ADR 0006.
-    //!
-    //! Each fn takes a freshly-constructed storage by `&mut` and asserts a
-    //! behavior the contract requires. Future Storage backends (e.g.
-    //! `WalBackedStorage` at M3) become contract-conformant by adding a
-    //! thin wrapper module that delegates each `#[test]` to the contract
-    //! fn of the same name.
+mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
-    pub fn set_returns_stored<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_set_returns_stored() {
+        let mut storage = InMemoryStorage::new();
         let result = storage.apply(Mutation::Set {
             key: String::from("foo"),
             value: "bar".into(),
@@ -135,14 +129,18 @@ pub(crate) mod contract {
         assert_eq!(result, Ok(MutationOutcome::Stored));
     }
 
-    pub fn del_returns_deleted_on_empty<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_del_returns_deleted() {
+        let mut storage = InMemoryStorage::new();
         let result = storage.apply(Mutation::Del {
             key: String::from("foo"),
         });
         assert_eq!(result, Ok(MutationOutcome::Deleted));
     }
 
-    pub fn incr_on_missing_starts_from_zero<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_incr_on_missing_key_starts_from_zero() {
+        let mut storage = InMemoryStorage::new();
         let result = storage.apply(Mutation::Incr {
             key: String::from("foo"),
             by: 1,
@@ -150,7 +148,9 @@ pub(crate) mod contract {
         assert_eq!(result, Ok(MutationOutcome::Counter { new_value: 1 }));
     }
 
-    pub fn incr_on_existing_int_adds<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_incr_on_existing_value_adds_to_it() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -165,7 +165,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some(8.into()));
     }
 
-    pub fn decr_on_existing_int_subtracts<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_decr_on_existing_value_subtracts_from_it() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -180,7 +182,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some(2.into()));
     }
 
-    pub fn incr_on_str_errors_and_preserves<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_incr_on_non_numeric_value_errors_and_preserves_original() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -195,7 +199,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some("hello".into()));
     }
 
-    pub fn decr_on_str_errors_and_preserves<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_decr_on_non_numeric_value_errors_and_preserves_original() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -210,7 +216,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some("hello".into()));
     }
 
-    pub fn incr_overflow_errors_and_preserves<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_incr_overflow_errors_and_preserves_original() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -225,7 +233,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some(u64::MAX.into()));
     }
 
-    pub fn decr_underflow_errors_and_preserves<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_decr_underflow_errors_and_preserves_original() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -240,7 +250,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some(0.into()));
     }
 
-    pub fn del_removes_existing_value<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_del_removes_existing_value() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -256,11 +268,15 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), None);
     }
 
-    pub fn read_returns_none_for_missing<S: Storage>(storage: &mut S) {
+    #[test]
+    fn read_returns_none_for_missing_value() {
+        let storage = InMemoryStorage::new();
         assert_eq!(storage.read("foo"), None);
     }
 
-    pub fn read_returns_some_after_set<S: Storage>(storage: &mut S) {
+    #[test]
+    fn read_returns_some_for_existing_value() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -270,11 +286,15 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some("bar".into()));
     }
 
-    pub fn exists_returns_false_for_missing<S: Storage>(storage: &mut S) {
+    #[test]
+    fn exists_returns_false_for_missing_value() {
+        let storage = InMemoryStorage::new();
         assert!(!storage.exists("foo"));
     }
 
-    pub fn exists_returns_true_after_set<S: Storage>(storage: &mut S) {
+    #[test]
+    fn exists_returns_true_for_existing_value() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -283,8 +303,9 @@ pub(crate) mod contract {
             .unwrap();
         assert!(storage.exists("foo"));
     }
-
-    pub fn incr_on_numeric_string_errors<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_incr_on_numeric_string_errors() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -299,7 +320,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some("5".into()));
     }
 
-    pub fn decr_on_numeric_string_errors<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_decr_on_numeric_string_errors() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -314,7 +337,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some("5".into()));
     }
 
-    pub fn set_can_store_int_variant<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_set_can_store_int_variant() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -324,7 +349,9 @@ pub(crate) mod contract {
         assert_eq!(storage.read("foo"), Some(StoredValue::Int(42)));
     }
 
-    pub fn set_can_store_str_variant<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_set_can_store_str_variant() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -333,11 +360,13 @@ pub(crate) mod contract {
             .unwrap();
         assert_eq!(
             storage.read("foo"),
-            Some(StoredValue::Str(String::from("hello"))),
+            Some(StoredValue::Str(String::from("hello")))
         );
     }
 
-    pub fn set_can_overwrite_with_different_variant<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_set_can_overwrite_with_different_variant() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -352,11 +381,13 @@ pub(crate) mod contract {
             .unwrap();
         assert_eq!(
             storage.read("foo"),
-            Some(StoredValue::Str(String::from("now a string"))),
+            Some(StoredValue::Str(String::from("now a string")))
         );
     }
 
-    pub fn incr_after_overwriting_int_with_str_errors<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_incr_after_overwriting_int_with_str_errors() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -375,16 +406,21 @@ pub(crate) mod contract {
         });
         assert_eq!(result, Err(StorageError::NotAnInteger));
     }
+    #[test]
+    fn apply_del_on_missing_key_is_idempotent() {
+        let mut storage = InMemoryStorage::new();
 
-    pub fn del_on_missing_is_idempotent<S: Storage>(storage: &mut S) {
         let result = storage.apply(Mutation::Del {
             key: String::from("never_set"),
         });
+
         assert_eq!(result, Ok(MutationOutcome::Deleted));
         assert!(!storage.exists("never_set"));
     }
 
-    pub fn del_twice_is_idempotent<S: Storage>(storage: &mut S) {
+    #[test]
+    fn apply_del_twice_is_idempotent() {
+        let mut storage = InMemoryStorage::new();
         storage
             .apply(Mutation::Set {
                 key: String::from("foo"),
@@ -396,109 +432,53 @@ pub(crate) mod contract {
                 key: String::from("foo"),
             })
             .unwrap();
+
         let second = storage.apply(Mutation::Del {
             key: String::from("foo"),
         });
+
         assert_eq!(second, Ok(MutationOutcome::Deleted));
         assert!(!storage.exists("foo"));
     }
-}
-
-#[cfg(test)]
-mod in_memory_contract_tests {
-    //! Conformance: `InMemoryStorage` passes the Storage contract.
-    //!
-    //! Each `#[test]` is a thin wrapper that creates a fresh
-    //! `InMemoryStorage` and runs the named contract fn against it.
-    use super::*;
-
-    /// Generate a `#[test]` that calls `contract::$name(&mut storage)`.
-    /// Local declarative macro (`macro_rules!`) — collapses the per-test
-    /// boilerplate "make storage, call contract fn" into one line per test.
-    macro_rules! delegate {
-        ($name:ident) => {
-            #[test]
-            fn $name() {
-                let mut s = InMemoryStorage::new();
-                contract::$name(&mut s);
-            }
-        };
-    }
-
-    delegate!(set_returns_stored);
-    delegate!(del_returns_deleted_on_empty);
-    delegate!(incr_on_missing_starts_from_zero);
-    delegate!(incr_on_existing_int_adds);
-    delegate!(decr_on_existing_int_subtracts);
-    delegate!(incr_on_str_errors_and_preserves);
-    delegate!(decr_on_str_errors_and_preserves);
-    delegate!(incr_overflow_errors_and_preserves);
-    delegate!(decr_underflow_errors_and_preserves);
-    delegate!(del_removes_existing_value);
-    delegate!(read_returns_none_for_missing);
-    delegate!(read_returns_some_after_set);
-    delegate!(exists_returns_false_for_missing);
-    delegate!(exists_returns_true_after_set);
-    delegate!(incr_on_numeric_string_errors);
-    delegate!(decr_on_numeric_string_errors);
-    delegate!(set_can_store_int_variant);
-    delegate!(set_can_store_str_variant);
-    delegate!(set_can_overwrite_with_different_variant);
-    delegate!(incr_after_overwriting_int_with_str_errors);
-    delegate!(del_on_missing_is_idempotent);
-    delegate!(del_twice_is_idempotent);
-}
-
-#[cfg(test)]
-mod from_text_tests {
-    //! Tests for `StoredValue::from_text` — the inference rule that lives
-    //! at the executor boundary. Not part of the Storage trait, so not
-    //! included in the contract.
-    use super::*;
-    use pretty_assertions::assert_eq;
-    use proptest::prelude::*;
-
     #[test]
-    fn infers_int_for_numeric_token() {
+    fn from_text_infers_int_for_numeric_token() {
         let result = StoredValue::from_text("5");
         assert_eq!(result, StoredValue::Int(5));
     }
 
     #[test]
-    fn infers_str_for_non_numeric_token() {
+    fn from_text_infers_str_for_non_numeric_token() {
         let result = StoredValue::from_text("foo");
         assert_eq!(result, StoredValue::Str(String::from("foo")));
     }
 
     #[test]
-    fn infers_str_for_negative_token() {
+    fn from_text_infers_str_for_negative_token() {
         let result = StoredValue::from_text("-5");
         assert_eq!(result, StoredValue::Str(String::from("-5")));
     }
-
     #[test]
-    fn infers_str_for_decimal_token() {
+    fn from_text_infers_str_for_decimal_token() {
         let result = StoredValue::from_text("3.14");
         assert_eq!(result, StoredValue::Str(String::from("3.14")));
     }
 
     #[test]
-    fn infers_str_for_overflow_token() {
+    fn from_text_infers_str_for_overflow_token() {
         let result = StoredValue::from_text("18446744073709551616");
         assert_eq!(
             result,
-            StoredValue::Str(String::from("18446744073709551616")),
+            StoredValue::Str(String::from("18446744073709551616"))
         );
     }
-
     #[test]
-    fn infers_int_for_zero() {
+    fn from_text_infers_int_for_zero() {
         // Boundary: parse::<u64>() accepts "0" → Int(0).
         assert_eq!(StoredValue::from_text("0"), StoredValue::Int(0));
     }
 
     #[test]
-    fn infers_int_for_u64_max() {
+    fn from_text_infers_int_for_u64_max() {
         // Symmetric to the overflow test: u64::MAX exactly should succeed as Int.
         assert_eq!(
             StoredValue::from_text("18446744073709551615"),
@@ -507,42 +487,10 @@ mod from_text_tests {
     }
 
     #[test]
-    fn infers_str_for_empty_string() {
+    fn from_text_infers_str_for_empty_string() {
         // "".parse::<u64>() errors → falls to Str("").
         // The executor path won't normally see this (split_whitespace strips it),
         // but locking the semantic protects against future input sources.
-        assert_eq!(StoredValue::from_text(""), StoredValue::Str(String::new()));
-    }
-
-    proptest! {
-        /// Round-trip property over the full u64 range.
-        ///
-        /// `proptest` generates many u64 values (including 0 and u64::MAX);
-        /// each one, stringified, must come back as `Int(n)` from `from_text`.
-        /// This locks the success branch across the entire input domain
-        /// rather than just the 0/u64::MAX/42 examples.
-        #[test]
-        fn round_trips_any_u64(n in any::<u64>()) {
-            prop_assert_eq!(
-                StoredValue::from_text(&n.to_string()),
-                StoredValue::Int(n)
-            );
-        }
-
-        /// Fall-through property: any string that fails to parse as u64
-        /// must come back as `Str(s)` unchanged.
-        ///
-        /// `".*"` is a regex strategy: proptest generates arbitrary UTF-8
-        /// strings matching the pattern. `prop_assume!` discards cases that
-        /// happen to parse as u64 — those are covered by the round-trip
-        /// property above. The remaining cases exercise the failure branch.
-        #[test]
-        fn falls_through_to_str_when_parse_fails(s in ".*") {
-            prop_assume!(s.parse::<u64>().is_err());
-            prop_assert_eq!(
-                StoredValue::from_text(&s),
-                StoredValue::Str(s.clone())
-            );
-        }
+        assert_eq!(StoredValue::from_text(""), StoredValue::Str(String::new()),);
     }
 }

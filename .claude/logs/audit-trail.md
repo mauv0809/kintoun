@@ -104,3 +104,9 @@
 - `2026-05-04 12:44:19` | Write | Task Board.md
 - `2026-05-04 13:12:11` | Edit | src/repl.rs
 - `2026-05-04 13:16:22` | Write | docs/adr/0010-repl-output-format-and-error-handling.md
+- `2026-05-04 13:23:27` | Write | src/storage.rs
+- `2026-05-04 13:26:13` | Edit | src/storage.rs
+- `2026-05-04 13:26:48` | Edit | src/storage.rs
+- `2026-05-04 13:28:30` | Write | docs/adr/0011-test-coverage-tooling.md
+- `2026-05-04 13:28:32` | Edit | .github/workflows/ci.yml
+- `2026-05-04 13:28:36` | Edit | .github/workflows/ci.yml
