@@ -1,0 +1,110 @@
+use std::io::{self, BufRead, Write};
+
+use crate::cmd::Command;
+use crate::executor::{ExecuteResult, execute};
+use crate::storage::{MutationOutcome, Storage, StoredValue};
+
+/// Run the REPL loop until EOF.
+///
+/// Reads lines from `input`, parses to Command, executes against `storage`,
+/// formats the result, and writes to `output`. Empty lines are skipped.
+/// Parse and execute errors are displayed inline (Redis-style "ERR ...")
+/// and the loop continues. Only IO errors abort.
+pub fn run<R: BufRead, W: Write, S: Storage>(
+    mut input: R,
+    mut output: W,
+    storage: &mut S,
+) -> io::Result<()> {
+    let mut line = String::new();
+    loop {
+        // Prompt — must flush so the user sees "> " before they type.
+        write!(output, "> ")?;
+        output.flush()?;
+
+        // Read one line. read_line returns the byte count;
+        // 0 means EOF (the input is exhausted), which is our exit signal.
+        line.clear();
+        let bytes_read = input.read_line(&mut line)?;
+        if bytes_read == 0 {
+            return Ok(());
+        }
+
+        // Skip blank lines silently.
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        // Parse → Execute → Format. Each error is displayed, never propagated.
+        match trimmed.parse::<Command>() {
+            Err(e) => writeln!(output, "ERR {}", e)?,
+            Ok(command) => match execute(storage, command) {
+                Err(e) => writeln!(output, "ERR {}", e)?,
+                Ok(result) => writeln!(output, "{}", format_result(&result))?,
+            },
+        }
+    }
+}
+
+fn format_result(result: &ExecuteResult) -> String {
+    match result {
+        ExecuteResult::Mutation(MutationOutcome::Stored) => "OK".to_string(),
+        ExecuteResult::Mutation(MutationOutcome::Deleted) => "OK".to_string(),
+        ExecuteResult::Mutation(MutationOutcome::Counter { new_value }) => new_value.to_string(),
+        ExecuteResult::Read(None) => "(nil)".to_string(),
+        ExecuteResult::Read(Some(StoredValue::Str(s))) => format!("\"{}\"", s),
+        ExecuteResult::Read(Some(StoredValue::Int(n))) => n.to_string(),
+        ExecuteResult::Existence(true) => "1".to_string(),
+        ExecuteResult::Existence(false) => "0".to_string(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::storage::InMemoryStorage;
+
+    #[test]
+    fn run_set_then_get_outputs_stored_value() {
+        // Keystone test: full Read-Eval-Print cycle. Set then Get,
+        // confirm both outputs appear in order. Captures stdout via Vec<u8>.
+        let input: &[u8] = b"set foo bar\nget foo\n";
+        let mut output: Vec<u8> = Vec::new();
+        let mut storage = InMemoryStorage::new();
+
+        run(input, &mut output, &mut storage).unwrap();
+
+        let output_str = String::from_utf8(output).unwrap();
+        assert!(output_str.contains("OK"), "output was: {}", output_str);
+        assert!(output_str.contains("\"bar\""), "output was: {}", output_str,);
+    }
+
+    #[test]
+    fn run_on_empty_input_terminates_cleanly() {
+        // EOF semantics: empty input means immediate exit, no loop iterations.
+        // Output should contain only the initial prompt, then EOF detection
+        // returns Ok(()).
+        let input: &[u8] = b"";
+        let mut output: Vec<u8> = Vec::new();
+        let mut storage = InMemoryStorage::new();
+
+        let result = run(input, &mut output, &mut storage);
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn run_invalid_command_emits_err_and_continues() {
+        // Locks the "errors don't crash the loop" invariant: an unknown
+        // verb produces ERR output, then the next valid line still works.
+        let input: &[u8] = b"foozle bar\nset foo bar\n";
+        let mut output: Vec<u8> = Vec::new();
+        let mut storage = InMemoryStorage::new();
+
+        run(input, &mut output, &mut storage).unwrap();
+
+        let output_str = String::from_utf8(output).unwrap();
+        assert!(output_str.contains("ERR"), "output was: {}", output_str);
+        assert!(output_str.contains("OK"), "output was: {}", output_str);
+    }
+}
