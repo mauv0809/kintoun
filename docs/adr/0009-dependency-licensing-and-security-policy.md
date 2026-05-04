@@ -27,6 +27,7 @@ A future commercial fork — `kintoun.cloud` — also wants to inherit a clean l
 2. **Allowed licenses — standard permissive:**
    - `MIT`, `Apache-2.0` (+ `WITH LLVM-exception`), `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `Unicode-3.0`, `Unicode-DFS-2016`, `Zlib`, `0BSD`, `BSL-1.0`.
    - Implicitly denied: `MPL-*`, `LGPL-*`, `GPL-*`, `AGPL-*`, and anything else not on the allow list.
+   - `unused-allowed-license = "allow"` suppresses warnings about allowlist entries that no current transitive dep happens to use. The allowlist is forward-looking policy, not a snapshot of today's dep graph; we don't want CI nagging about entries that exist precisely so that future deps don't get blocked.
 
 3. **Advisories.** v2 defaults — vulnerabilities are denied automatically. `yanked = "warn"` flags yanked crates without blocking. `ignore = []` — every advisory is reviewed when it appears, never silently suppressed.
 
