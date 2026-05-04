@@ -1,8 +1,9 @@
 use std::io::{self, BufRead, Write};
 
 use crate::cmd::Command;
-use crate::executor::{ExecuteResult, execute};
-use crate::storage::{MutationOutcome, Storage, StoredValue};
+use crate::executor::execute;
+use crate::format::format_result;
+use crate::storage::Storage;
 
 /// Run the REPL loop until EOF.
 ///
@@ -43,19 +44,6 @@ pub fn run<R: BufRead, W: Write, S: Storage>(
                 Ok(result) => writeln!(output, "{}", format_result(&result))?,
             },
         }
-    }
-}
-
-fn format_result(result: &ExecuteResult) -> String {
-    match result {
-        ExecuteResult::Mutation(MutationOutcome::Stored) => "OK".to_string(),
-        ExecuteResult::Mutation(MutationOutcome::Deleted) => "OK".to_string(),
-        ExecuteResult::Mutation(MutationOutcome::Counter { new_value }) => new_value.to_string(),
-        ExecuteResult::Read(None) => "(nil)".to_string(),
-        ExecuteResult::Read(Some(StoredValue::Str(s))) => format!("\"{}\"", s),
-        ExecuteResult::Read(Some(StoredValue::Int(n))) => n.to_string(),
-        ExecuteResult::Existence(true) => "1".to_string(),
-        ExecuteResult::Existence(false) => "0".to_string(),
     }
 }
 
