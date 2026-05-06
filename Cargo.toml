@@ -25,7 +25,7 @@ exclude = [
 [dependencies]
 thiserror = "2"
 anyhow = "1"
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "signal"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "io-std", "signal"] }
 tokio-util = { version = "0.7", features = ["codec"] }
 bytes = "1"
 futures = "0.3"

@@ -194,3 +194,5 @@
 - `2026-05-06 14:23:14` | Edit | .claude/knowledge-nominations.md
 - `2026-05-06 14:24:16` | Edit | .claude/knowledge-nominations.md
 - `2026-05-06 14:27:04` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:33:56` | Write | src/bin/kintoun-cli.rs
+- `2026-05-06 14:34:32` | Edit | Cargo.toml
