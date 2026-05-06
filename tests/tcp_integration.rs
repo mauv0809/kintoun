@@ -32,7 +32,7 @@ async fn spawn_server() -> std::net::SocketAddr {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
     let storage = Arc::new(Mutex::new(InMemoryStorage::new()));
-    tokio::spawn(serve(listener, storage));
+    tokio::spawn(serve(listener, storage, std::future::pending::<()>()));
     addr
 }
 
