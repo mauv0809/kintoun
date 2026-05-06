@@ -11,3 +11,32 @@
 - `2026-05-04 13:55:19` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
 - `2026-05-04 16:27:13` | GUARD | MEDIUM | SOFT BLOCKED: recursive/force rm → rm -rf ~/.claude/projects/-home-netrom-nimbus ~/.claude/projects/-home-netrom-learn-rust && ls ~/.claude/projects/ | grep -E 'nimbus|learn-rust|kintoun' || echo "doomed dirs gone"
 - `2026-05-04 18:05:52` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-04 19:37:36` | FAILURE | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-06 14:04:23` | GUARD | MEDIUM | SOFT BLOCKED: recursive/force rm → target/debug/kintoun --bind 127.0.0.1:14242 > /tmp/kintoun_smoke.log 2>&1 &
+SERVER_PID=$!
+sleep 0.5
+echo "server pid: $SERVER_PID, log so far:"
+cat /tmp/kintoun_smoke.log
+echo "---"
+echo "sending a SET via raw TCP..."
+python3 -c "
+import socket, struct
+s = socket.create_connection(('127.0.0.1', 14242), timeout=2)
+payload = b'SET smoke ok'
+s.sendall(struct.pack('!I', len(payload)) + payload)
+prefix = s.recv(4)
+n = struct.unpack('!I', prefix)[0]
+resp = s.recv(n)
+print(f'response: {resp!r}')
+s.close()
+"
+echo "---"
+echo "sending SIGINT..."
+kill -INT $SERVER_PID
+wait $SERVER_PID
+EXIT_CODE=$?
+echo "exit code: $EXIT_CODE"
+echo "---"
+echo "final log:"
+cat /tmp/kintoun_smoke.log
+rm -f /tmp/kintoun_smoke.log

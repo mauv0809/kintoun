@@ -134,3 +134,63 @@
 - `2026-05-04 17:41:39` | Write | docs/adr/0012-m2-wire-protocol.md
 - `2026-05-04 17:42:41` | Write | docs/adr/0013-m2-server-architecture.md
 - `2026-05-04 19:29:30` | Edit | .gitignore
+- `2026-05-04 19:32:45` | Edit | .claude/memory.md
+- `2026-05-04 19:33:08` | Edit | .claude/memory.md
+- `2026-05-04 19:33:25` | Edit | .claude/memory.md
+- `2026-05-04 19:33:37` | Edit | .claude/memory.md
+- `2026-05-04 19:33:45` | Edit | .claude/memory.md
+- `2026-05-04 19:33:54` | Edit | Task Board.md
+- `2026-05-04 19:34:02` | Edit | Task Board.md
+- `2026-05-04 19:34:56` | Edit | .claude/knowledge-nominations.md
+- `2026-05-04 19:35:53` | Edit | Daily Notes/050426.md
+- `2026-05-04 19:39:29` | Edit | Daily Notes/050426.md
+- `2026-05-06 08:30:11` | Write | Daily Notes/050626.md
+- `2026-05-06 09:25:27` | Write | /home/netrom/.claude/projects/-home-netrom-kintoun/memory/feedback_scaffolding_calibration.md
+- `2026-05-06 09:25:35` | Edit | /home/netrom/.claude/projects/-home-netrom-kintoun/memory/MEMORY.md
+- `2026-05-06 10:10:13` | Edit | src/server/connection.rs
+- `2026-05-06 10:13:26` | Edit | .claude/memory.md
+- `2026-05-06 10:13:35` | Edit | .claude/memory.md
+- `2026-05-06 10:13:53` | Edit | .claude/memory.md
+- `2026-05-06 10:14:05` | Edit | .claude/memory.md
+- `2026-05-06 10:14:18` | Edit | Task Board.md
+- `2026-05-06 10:14:28` | Edit | Task Board.md
+- `2026-05-06 10:16:30` | Edit | Task Board.md
+- `2026-05-06 10:17:30` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 10:18:02` | Write | Daily Notes/050626.md
+- `2026-05-06 10:19:37` | Edit | .claude/knowledge-base.md
+- `2026-05-06 10:19:52` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 10:20:04` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 10:20:14` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 10:21:38` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 12:40:33` | Edit | src/server.rs
+- `2026-05-06 12:42:25` | Write | tests/tcp_integration.rs
+- `2026-05-06 13:16:52` | Edit | tests/tcp_integration.rs
+- `2026-05-06 13:17:37` | Edit | tests/tcp_integration.rs
+- `2026-05-06 13:30:33` | Edit | src/server.rs
+- `2026-05-06 13:43:17` | Write | src/main.rs
+- `2026-05-06 13:43:45` | Edit | src/server.rs
+- `2026-05-06 14:08:51` | Edit | docs/adr/0013-m2-server-architecture.md
+- `2026-05-06 14:09:13` | Edit | docs/adr/0013-m2-server-architecture.md
+- `2026-05-06 14:09:49` | Edit | .claude/memory.md
+- `2026-05-06 14:11:50` | Edit | .claude/memory.md
+- `2026-05-06 14:12:08` | Edit | .claude/memory.md
+- `2026-05-06 14:12:34` | Edit | .claude/memory.md
+- `2026-05-06 14:12:51` | Edit | .claude/memory.md
+- `2026-05-06 14:13:34` | Edit | Task Board.md
+- `2026-05-06 14:13:58` | Edit | Task Board.md
+- `2026-05-06 14:14:59` | Edit | Daily Notes/050626.md
+- `2026-05-06 14:18:11` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:19:25` | Edit | .claude/knowledge-base.md
+- `2026-05-06 14:19:53` | Edit | .claude/knowledge-base.md
+- `2026-05-06 14:20:02` | Edit | .claude/knowledge-base.md
+- `2026-05-06 14:20:14` | Edit | .claude/knowledge-base.md
+- `2026-05-06 14:20:35` | Edit | .claude/knowledge-base.md
+- `2026-05-06 14:20:51` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:22:05` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:22:18` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:22:32` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:22:46` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:23:01` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:23:14` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:24:16` | Edit | .claude/knowledge-nominations.md
+- `2026-05-06 14:27:04` | Edit | .claude/knowledge-nominations.md

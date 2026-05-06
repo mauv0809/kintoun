@@ -1,16 +1,12 @@
 # Task Board
 
 ## Today
-(M1 done — pick up tomorrow with optional M2 design or rest)
+- [ ] **M3 kickoff prep** — read DDIA ch.3 (Storage and Retrieval). Then run a design pass on WAL format (line-delimited text vs binary record), append + fsync policy, replay on startup, and how `WalBackedStorage` plugs into the existing `Storage` trait + contract test suite.
 
 ## This Week
-- [ ] **ADR 0012** — M2 wire protocol (TCP, length-prefix envelope, text payload). Thicker Alternatives section.
-- [ ] **ADR 0013** — M2 server architecture (sync REPL + async server, Arc<Mutex>, module layout, lifecycle, testing).
-- [ ] **M2 implementation** — `src/server/{mod,codec,connection}.rs` + main.rs CLI flag + `tests/tcp_integration.rs`. Scaffold pseudocode-first when user is ready.
-- [ ] Read Tokio tutorial as reading companion before/during M2 implementation.
+- [ ] **M3 design pass + ADR** — once the WAL direction clarifies, write the ADR (Nygard format; thicker Alternatives section since the durability decision shapes M4–M6).
 
 ## Backlog (Milestone Arc)
-- [ ] M2: TCP server + framed protocol (tokio)
 - [ ] M3: WAL (Write-Ahead Log) persistence + replay
 - [ ] M4: Pub/sub event streaming
 - [ ] M5: Consumer groups + queue semantics
@@ -19,10 +15,19 @@
 - [ ] M8: Partitioning/sharding
 - [ ] Stretches: snapshots, transactions, gRPC, metrics, client SDK
 - [ ] Coverage threshold ratchet at M3 (per ADR 0011)
+- [ ] Graceful drain timeout (ADR 0013 follow-up; revisit at M5+ when long-running consumer connections appear)
 - [ ] Post-M1 quoting + Str escape rules + inference policy
 
 ## Done
-- [x] **2026-05-04:** **M2 design pass complete** — six decisions locked (transport, wire format, architecture, module layout, testing, error boundary). Captured in `memory.md` M2 Design section. ADRs pending.
+- [x] **2026-05-06 (PM): M2 FEATURE-COMPLETE** — `serve(listener, storage, shutdown: F)` with `JoinSet` drain (per-conn tasks tracked; on shutdown listener drops then `join_next` until empty; no drain timeout). `tests/tcp_integration.rs` — 6 real-TCP tests (round-trip, multi-client shared, oversize frame teardown, partial-prefix EOF, pipelined order, concurrent INCR via Mutex). `main.rs` rewritten — hand-rolled `parse_args` (Mode = Repl | Server(SocketAddr)) + 6 unit tests; lazy multi-thread tokio runtime on server branch only; `tokio::signal::ctrl_c()` wrapped to `Future<Output = ()>`. ADR 0013 status note added (flat-file module layout, serve signature, JoinSet drain, lazy runtime captured as deltas). End-to-end smoke green: real TCP SET → OK; SIGINT → exit 0. **129 tests total**.
+- [x] **2026-05-06 (AM):** **M2 connection layer shipped** (commit b14cf05) — `handle_connection<IO, S>` async per-connection task; `Arc<Mutex<Storage>>` shared state with `std::sync::Mutex` block-scoped guard (compile-time `!Send` footgun protection); error policy locked (codec/utf-8/write fatal; parse/executor → `ERR <msg>`); `format_error` helper added; 7 duplex tests; `futures = "0.3"` dep added. ~117 tests total.
+- [x] **2026-05-04 (EOD):** **M2 codec layer + format extraction shipped** — 4 commits: ADRs 0012/0013, codec + format module, session bookkeeping, `.claude/backups/` gitignore. 14 codec tests (13 unit + proptest) + 10 format tests. ~110 tests total green.
+- [x] **2026-05-04:** **ADR 0012** — M2 wire protocol (TCP + length-prefix envelope + text payload).
+- [x] **2026-05-04:** **ADR 0013** — M2 server architecture (sync REPL + async server alongside, Arc<Mutex>, three-layer testing).
+- [x] **2026-05-04:** **`src/format.rs`** extracted from `repl.rs` — shared format module for REPL + TCP server. 10 unit tests.
+- [x] **2026-05-04:** **`src/server/codec.rs`** — length-prefixed FrameCodec. 13 unit tests + proptest.
+- [x] **2026-05-04:** Cargo deps added — tokio, tokio-util, bytes. `.gitignore` updated for `.claude/backups/`.
+- [x] **2026-05-04:** **M2 design pass complete** — six decisions locked (transport, wire format, architecture, module layout, testing, error boundary).
 - [x] **2026-05-04:** Cleanup — removed `~/.claude/projects/-home-netrom-{nimbus,learn-rust}` (migration verified); confirmed `.claude/skills/gitnexus` and `~/.claude/hooks/gitnexus` already absent.
 - [x] **2026-05-04:** **M1 STRUCTURALLY COMPLETE** — kintoun runs interactively (`cargo run`). 86 tests; clippy + fmt clean; CI green.
 - [x] **2026-05-04:** `repl.rs` — generic over BufRead+Write+Storage, anyhow error unification at boundary, Redis-like format, 11 tests (loop semantics + format precision)

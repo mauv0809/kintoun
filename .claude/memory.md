@@ -4,7 +4,7 @@
 - **Name:** **kintoun** (crate + directory + GitHub repo). Directory: `/home/netrom/kintoun`. `kintoun = 筋斗雲`, Goku's Flying Nimbus. Future cloud version: `kintoun.cloud`.
 - **What:** Distributed KV store with stream/queue/cluster ambitions, built as the vehicle for learning Rust.
 - **Language/build tool:** Rust 2024, Cargo. MSRV 1.85. Toolchain at `~/.cargo/bin` — Bash tool doesn't source `~/.cargo/env`; prepend to PATH or use full paths.
-- **State (2026-05-04 EOD):** **M1 structurally complete.** All four modules wired (cmd/storage/executor/repl); main.rs is a 5-line shim. 86 tests green; clippy + fmt clean; CI runs fmt + clippy + cargo-llvm-cov + cargo-deny. Coverage: storage/executor at 100%, repl 100% lines / 97% regions, cmd 95% lines (gap is test-only defensive `panic!` arms). 11 ADRs total. The interactive REPL works end-to-end; layered design (executor coerces, storage strict) proven by the keystone test.
+- **State (2026-05-06):** **M2 feature-complete.** Real-TCP server with framed wire protocol; REPL (no flag) or server (`--bind <addr>`) dispatch; Ctrl-C → JoinSet drain. **129 tests green** (M1 86 + codec 14 + format 10 + connection 7 + tcp_integration 6 + main 6); 13 ADRs; clippy + fmt clean. Next: M3 (WAL + replay).
 - **Persona/niche:** Deferred. Decide ~M4 once friction surfaces real angles.
 
 ## Workflow Rules (load every session)
@@ -17,8 +17,8 @@
 
 ## Milestone Arc (locked 2026-04-30)
 - M1: In-memory KV + REPL ✅ **structurally complete 2026-05-04**
-- M2: TCP server + framed protocol (tokio) ← **next**
-- M3: WAL persistence + replay
+- M2: TCP server + framed protocol (tokio) ✅ **feature-complete 2026-05-06**
+- M3: WAL persistence + replay ← **next**
 - M4: Pub/sub event streaming on the log
 - M5: Consumer groups + offsets (queue semantics)
 - M6: Single-leader async replication
@@ -34,14 +34,23 @@
 - `main.rs` ✅ 5-line shim — locks stdin/stdout, builds InMemoryStorage, calls repl::run
 - `tests/kv_integration.rs` ❌ optional; lands when M2 starts touching multiple layers
 
-## M2 Design (locked 2026-05-04)
+## M2 Design (locked 2026-05-04, ADRs 0012 + 0013)
 - **Transport:** TCP, default bind `127.0.0.1:4242`, `--bind <addr:port>` override (hand-rolled CLI parsing in `main.rs`); Ctrl-C graceful shutdown.
 - **Wire format:** length-prefixed envelope `[len:u32 BE][payload]`; payload = UTF-8 text command line; M1's `cmd::parse` reused unchanged.
 - **Architecture:** sync REPL stays; new async server alongside; both share `cmd`/`executor`/`storage`. Tokio task-per-connection with `Arc<Mutex<InMemoryStorage>>` (RwLock/sharding deferred).
-- **Module layout:** `src/server/{mod,codec,connection}.rs`.
+- **Module layout:** `src/server.rs` (Rust 2018+ flat-file style) + `src/server/{codec,connection}.rs`.
 - **Tests:** three layers — codec unit tests (sync), in-memory `tokio::io::duplex` connection tests, real-TCP integration in `tests/tcp_integration.rs`.
 - **Errors:** anyhow at server boundary, thiserror at typed layers, `ERR <msg>` payload to client (consistent with REPL per ADR 0010).
 - **Future evolution:** add `frame_type:u8` byte to envelope at M4 when push frames arrive; format-negotiation handshake only if ever needed.
+
+## M2 Module Status (all ✅ as of 2026-05-06)
+- `cmd.rs`, `executor.rs`, `storage.rs` reused unchanged from M1
+- `format.rs` extracted from `repl.rs` (10 unit tests, all 8 ExecuteResult arms + boundary edges + `format_error`)
+- `server.rs` flat-file: `pub mod codec; pub mod connection;` + `serve(listener, storage, shutdown)` with JoinSet drain
+- `server/codec.rs` length-prefixed `FrameCodec` (13 unit tests + 1 proptest property)
+- `server/connection.rs` `handle_connection<IO, S>` generic over AsyncRead+AsyncWrite+Unpin and Storage+Send; `std::sync::Mutex` block-scoped guard (compile-time !Send footgun protection); 7 duplex tests
+- `tests/tcp_integration.rs` 6 real-TCP tests: round-trip, multi-client shared, oversize-frame teardown, partial-prefix EOF, pipelined order, concurrent INCR via Mutex
+- `main.rs` 6 unit tests on `parse_args` grammar; lazy tokio runtime on server branch; ctrl_c → JoinSet drain
 
 ## Reading Companions
 - **Rust:** The Rust Book (free, official). Read organically.
@@ -51,24 +60,28 @@
 ## Key Paths
 - `/home/netrom/kintoun` — project root
 - `~/.claude/projects/-home-netrom-kintoun/memory/` — auto-memory (active)
-- `Cargo.toml`, `src/{main,lib,cmd,storage,executor,repl}.rs` — Layout 2
-- `docs/adr/0001-…0011-*.md` — ADRs (Nygard format), 11 total
+- `Cargo.toml`, `src/{main,lib,cmd,storage,executor,repl,format,server}.rs` + `src/server/codec.rs`
+- `docs/adr/0001-…0013-*.md` — ADRs (Nygard format), 13 total
 - `docs/dev-setup.md` — local toolchain + bacon + IDE format-on-save + pre-commit hook
 - `.github/workflows/ci.yml` — fmt --check + clippy -D warnings + cargo-llvm-cov + cargo-deny
 - `bacon.toml`, `.githooks/pre-commit`, `deny.toml` — local + CI infrastructure
 
 ## Now
-- **M2 design pass complete.** All six decisions locked (see M2 Design section). Next: ADR 0012 (wire protocol) + 0013 (server architecture), then scaffold `src/server/*` per the locked design. Tokio tutorial is the reading companion before code.
+- **M2 closed.** End-to-end smoke confirmed (real TCP SET → OK; SIGINT → exit 0). Next: kick off M3 — read DDIA ch.3 (Storage and Retrieval), then design pass for WAL format + replay strategy.
 
 ## Open Threads
-- **M2 ADR drafts** — 0012 wire protocol (thicker Alternatives section per ADR-rigor rule), 0013 server architecture (lighter, mostly mechanics).
-- **M2 implementation** — `src/server/{mod,codec,connection}.rs` + main.rs CLI parsing + `tests/tcp_integration.rs`. Pseudocode-first scaffolding when user is ready.
+- **M3 design pass** — WAL (Write-Ahead Log) format, append/fsync policy, replay on startup, integration with `Storage` trait (likely a new `WalBackedStorage` impl that inherits the contract test suite).
+- **ADR 0013 status note** — added 2026-05-06; flat-file module layout, `serve` signature, JoinSet drain, lazy runtime captured as deltas.
 - **Stop hook prompt re-enable** — currently disabled. Revisit after deciding whether to retool the prompt or accept noise.
 - **Coverage threshold ratchet** — at M3 once baseline stabilizes (ADR 0011).
+- **Graceful drain timeout** — ADR 0013 follow-up; revisit at M5+ when long-running consumer connections appear.
 - **Post-M1 quoting** — defer until something requires it (ADR 0008/0010 follow-ups).
 
 ## Recent Decisions
-- 2026-05-04: **M2 design pass complete.** Six decisions locked: TCP+envelope wire format (B1: length-prefix + text payload), sync REPL + async server alongside, `Arc<Mutex<InMemoryStorage>>` sharing, `src/server/{mod,codec,connection}.rs` layout, three-layer testing strategy, anyhow/thiserror boundary consistent with REPL. Captured in M2 Design section. ADRs 0012/0013 pending.
+- 2026-05-06 (PM): **M2 closed.** `serve(listener, storage, shutdown: F)` with `JoinSet` drain (per-conn tasks tracked; on shutdown listener drops then `join_next` until empty; no drain timeout — ADR 0013 follow-up). 6 real-TCP integration tests (round-trip, multi-client, oversize, partial-prefix, pipelined, concurrent INCR). `main.rs` rewritten: hand-rolled `parse_args` (Mode = Repl | Server(SocketAddr)), 6 unit tests, lazy multi-thread tokio runtime on server branch only, `tokio::signal::ctrl_c()` wrapped to `Future<Output = ()>`. CLI: bare `--bind` errors with "missing argument" — explicit-value choice. End-to-end smoke: real TCP client SET → OK; SIGINT → exit 0. 129 tests project-wide.
+- 2026-05-06 (AM): **M2 connection layer landed** (b14cf05). `handle_connection<IO, S>` generic over AsyncRead+AsyncWrite+Unpin and Storage+Send. `std::sync::Mutex` with block-scoped guard — compiler enforces no `MutexGuard` across `.await`. Error policy: codec/utf-8/write fatal → close; parse/executor → `ERR <msg>` continue. 7 duplex tests; `format_error` helper added to `format.rs`; `futures = "0.3"` dep added.
+- 2026-05-04 (EOD): **M2 codec layer + format extraction landed.** ADRs 0012 (wire protocol, thicker Alternatives) + 0013 (server architecture) committed. `src/server/codec.rs` length-prefixed FrameCodec (13 tests + proptest); `src/format.rs` extracted from repl.rs (10 tests). Tokio + tokio-util + bytes added to Cargo.toml. `.claude/backups/` gitignored.
+- 2026-05-04: **M2 design pass complete.** Six decisions locked: TCP+envelope wire format (B1: length-prefix + text payload), sync REPL + async server alongside, `Arc<Mutex<InMemoryStorage>>` sharing, `src/server.rs` flat-file layout (Rust 2018+ style) + `src/server/{codec,connection}.rs`, three-layer testing strategy, anyhow/thiserror boundary consistent with REPL.
 - 2026-05-04: **M1 close.** Generic `Storage` contract test suite landed (per ADR 0006 point D); 22 contract fns + macro-generated wrappers. M3's WalBackedStorage will inherit by adding one wrapper module.
 - 2026-05-04: First **proptest** properties on `from_text` — round-trip on success path, fall-through on failure path. Each runs ~256 cases per CI run.
 - 2026-05-04: **cargo-llvm-cov** in CI replaces `cargo test` (single instrumented run, not double). No threshold yet — measure first, ratchet at M3. ADR 0011.

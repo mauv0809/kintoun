@@ -8,3 +8,5 @@
 - `2026-05-04 10:32:07` | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
 - `2026-05-04 13:55:19` | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
 - `2026-05-04 18:05:52` | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-04 19:37:36` | ERROR | OTHER | Read | File does not exist. Note: your current working directory is /home/netrom/kintoun.
+- `2026-05-06 13:23:05` | WARN | FILESYSTEM | Bash | Exit code 128

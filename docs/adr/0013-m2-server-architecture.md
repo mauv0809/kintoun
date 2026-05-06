@@ -1,7 +1,7 @@
 # ADR 0013: M2 Server Architecture — Async Server Alongside Sync REPL with Arc<Mutex> Storage
 
 Date: 2026-05-04
-Status: Accepted (implementation pending in `src/server/`)
+Status: Accepted (implemented 2026-05-06; see Status Notes)
 
 ## Context
 
@@ -75,3 +75,17 @@ These choices are mostly mechanical. ADR 0012 carries the high-stakes weight; th
 - **Graceful drain timeout.** M2 ships with drop-and-let-finish. If shutdown latency becomes an issue (e.g., long-running consumer connections at M5), add a configurable drain deadline.
 - **Max concurrent connections cap.** M2 has none. Add only if resource exhaustion is observed; bound the cap by available file descriptors and memory.
 - **Configurable `KINTOUN_BIND` environment variable.** In addition to the `--bind` flag. Cosmetic; defer.
+
+## Status Notes (2026-05-06)
+
+Minor deviations from the original Decision section, captured at implementation time:
+
+- **Module layout uses Rust 2018+ flat-file form.** The ADR specified `src/server/{mod,codec,connection}.rs`; the implementation uses `src/server.rs` (flat file holding `pub mod codec; pub mod connection;` and the `serve` function) plus the `src/server/{codec,connection}.rs` submodules. Equivalent module shape; idiomatic Rust 2018+. No semantic change.
+
+- **Public function is `serve(listener, storage, shutdown)`, not `run`.** Caller owns the bind (passes a `TcpListener`) and the shutdown signal (passes a `Future<Output = ()>`). This shape lets tests pass `std::future::pending()` for "serve forever" and the binary pass `tokio::signal::ctrl_c()`. Tighter separation of concerns than the ADR sketched.
+
+- **Graceful shutdown uses `tokio::task::JoinSet`.** Per-connection tasks are tracked in a `JoinSet`; on shutdown the listener drops and the JoinSet is drained via `join_next` until empty. This is a stricter implementation than the ADR's "let in-flight finish naturally" — the function actually awaits drain rather than relying on runtime shutdown to do it. Drain has no timeout (Open Follow-up: "Graceful drain timeout").
+
+- **`--bind <addr>` requires a value.** No bare-`--bind` shorthand for the default 127.0.0.1:4242. Most explicit; bare `--bind` errors with "missing argument."
+
+- **Lazy tokio runtime.** `fn main` is sync; the runtime is built only on the server branch. REPL stays runtime-free, matching the principle "async earns its keep where concurrency exists" from the ADR's Context section.
