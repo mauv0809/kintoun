@@ -9,6 +9,11 @@
 use crate::executor::ExecuteResult;
 use crate::storage::{MutationOutcome, StoredValue};
 
+/// Render any error as the wire `ERR <msg>` form (per ADR 0010).
+pub fn format_error<E: std::error::Error>(err: &E) -> String {
+    format!("ERR {}", err)
+}
+
 /// Render an ExecuteResult as a Redis-like string.
 ///
 /// Returns the value WITHOUT a trailing newline. Callers decide:
